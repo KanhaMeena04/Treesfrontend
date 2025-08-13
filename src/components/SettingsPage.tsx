@@ -30,66 +30,87 @@ import {
   Monitor
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useSettings } from '@/hooks/useSettings';
 
 export const SettingsPage = () => {
-  const [activeTab, setActiveTab] = useState('account');
-  const [isLoading, setIsLoading] = useState(false);
+  const { 
+    settings, 
+    isLoading, 
+    error, 
+    updateAccountSettings, 
+    updatePrivacySettings, 
+    updateNotificationSettings, 
+    updateAppSettings,
+    exportSettings,
+    resetSettings,
+    clearError
+  } = useSettings();
   
-  // Account Settings
-  const [accountSettings, setAccountSettings] = useState({
-    fullName: 'John Doe',
-    username: 'johndoe',
-    email: 'john@example.com',
-    phone: '+1 (555) 123-4567',
-    bio: 'Passionate content creator and streamer',
-    language: 'en',
-    timezone: 'UTC-5'
-  });
-
-  // Privacy Settings
-  const [privacySettings, setPrivacySettings] = useState({
-    profileVisibility: 'public',
-    showOnlineStatus: true,
-    allowMessages: true,
-    allowFriendRequests: true,
-    showActivityStatus: false,
-    allowAnalytics: true,
-    allowCookies: true
-  });
-
-  // Notification Settings
-  const [notificationSettings, setNotificationSettings] = useState({
-    pushNotifications: true,
+  const [activeTab, setActiveTab] = useState('account');
+  
+  // Use settings from hook or fallback to defaults
+  const accountSettings = settings?.account || {
     emailNotifications: true,
+    pushNotifications: true,
     smsNotifications: false,
-    newFollowers: true,
-    newMessages: true,
-    liveStreams: true,
-    subscriptionUpdates: true,
     marketingEmails: false
-  });
+  };
 
-  // App Settings
-  const [appSettings, setAppSettings] = useState({
-    theme: 'system',
-    autoPlay: true,
-    dataSaver: false,
-    downloadQuality: 'high',
-    soundEffects: true,
-    hapticFeedback: true
-  });
+  const privacySettings = settings?.privacy || {
+    profileVisibility: 'public' as const,
+    showOnlineStatus: true,
+    allowMessagesFrom: 'everyone' as const,
+    showLastSeen: true,
+    allowProfileViews: true
+  };
+
+  const notificationSettings = settings?.notifications || {
+    newMatches: true,
+    messages: true,
+    likes: true,
+    superLikes: true,
+    subscriptionUpdates: true,
+    streamNotifications: true
+  };
+
+  const appSettings = settings?.app || {
+    theme: 'system' as const,
+    language: 'en',
+    timezone: 'UTC-5',
+    autoPlayVideos: true,
+    soundEffects: true
+  };
 
   const handleSaveSettings = async (section: string) => {
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      toast({
-        title: 'Settings Saved',
-        description: `${section} settings have been updated successfully.`,
-      });
-      setIsLoading(false);
-    }, 1000);
+    try {
+      let success = false;
+      
+      switch (section) {
+        case 'account':
+          success = await updateAccountSettings(accountSettings);
+          break;
+        case 'privacy':
+          success = await updatePrivacySettings(privacySettings);
+          break;
+        case 'notifications':
+          success = await updateNotificationSettings(notificationSettings);
+          break;
+        case 'app':
+          success = await updateAppSettings(appSettings);
+          break;
+        default:
+          break;
+      }
+      
+      if (success) {
+        toast({
+          title: 'Settings Saved',
+          description: `${section} settings have been updated successfully.`,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+    }
   };
 
   const handleDeleteAccount = () => {

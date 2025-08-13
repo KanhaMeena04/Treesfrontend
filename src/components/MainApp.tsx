@@ -19,6 +19,8 @@ import { SubscriptionHistoryPage } from './SubscriptionHistoryPage';
 import { StreamerDiscoveryPage } from './StreamerDiscoveryPage';
 import { SettingsPage } from './SettingsPage';
 import { SubscriptionsPage } from './SubscriptionsPage';
+import { ErrorBoundary } from './ErrorBoundary';
+
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
@@ -111,7 +113,42 @@ export const MainApp = ({ onShowAdmin }: MainAppProps) => {
   };
 
   const renderContent = () => {
-    console.log('Current activeTab:', activeTab);
+    console.log('Current activeTab:', activeTab, 'isLoggedIn:', isLoggedIn);
+    
+    // If not logged in, show login prompt for protected features
+    if (!isLoggedIn && ['arcade', 'subscriptions', 'messages', 'profile', 'settings'].includes(activeTab)) {
+      return (
+        <div className="flex-1 flex items-center justify-center p-6">
+          <Card className="w-full max-w-md">
+            <CardContent className="pt-8 pb-8 text-center">
+              <div className="flex items-center justify-center space-x-3 mb-6">
+                <img 
+                  src="/logo.svg" 
+                  alt="Treesh" 
+                  className="w-16 h-16 object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+                <div className="w-16 h-16 rounded-full flex items-center justify-center hidden overflow-hidden">
+                  <img src="/logo.svg" alt="Treesh Logo" className="w-full h-full object-cover" />
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-primary mb-4 font-treesh">Login Required</h2>
+              <p className="text-muted-foreground mb-6 font-inter">Please log in to access {activeTab} features.</p>
+              <Button 
+                onClick={() => setIsAuthOpen(true)}
+                className="w-full bg-primary hover:bg-primary-dark text-white font-inter py-3 px-6 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl"
+              >
+                Login Now
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+    
     switch (activeTab) {
       case 'home':
         return (
@@ -134,10 +171,19 @@ export const MainApp = ({ onShowAdmin }: MainAppProps) => {
       
       case 'arcade':
         console.log('Rendering ArcadePage component');
-        return <ArcadePage />;
+        return (
+          <ErrorBoundary>
+            <ArcadePage />
+          </ErrorBoundary>
+        );
       
       case 'subscriptions':
-        return <SubscriptionsPage />;
+        console.log('Rendering SubscriptionsPage component');
+        return (
+          <ErrorBoundary>
+            <SubscriptionsPage />
+          </ErrorBoundary>
+        );
       
       case 'discover-streamers':
         return <StreamerDiscoveryPage />;
@@ -322,7 +368,9 @@ export const MainApp = ({ onShowAdmin }: MainAppProps) => {
         )}
         
         <main className="flex-1 min-h-screen">
-          {renderContent()}
+          <ErrorBoundary>
+            {renderContent()}
+          </ErrorBoundary>
           <Footer />
         </main>
       </div>

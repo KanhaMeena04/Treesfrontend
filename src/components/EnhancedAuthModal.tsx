@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { Eye, EyeOff, ArrowLeft, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface EnhancedAuthModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ interface EnhancedAuthModalProps {
 type AuthStep = 'login' | 'register' | 'otp' | 'forgot' | 'reset';
 
 export const EnhancedAuthModal = ({ isOpen, onClose, onLogin }: EnhancedAuthModalProps) => {
+  const { login, register, checkUsername, getUsernameSuggestions } = useAuth();
   const [step, setStep] = useState<AuthStep>('login');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -31,6 +33,8 @@ export const EnhancedAuthModal = ({ isOpen, onClose, onLogin }: EnhancedAuthModa
   const [loginMethod, setLoginMethod] = useState<'email' | 'username'>('email');
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
   const [checkingUsername, setCheckingUsername] = useState(false);
+  const [usernameSuggestions, setUsernameSuggestions] = useState<string[]>([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   // Password validation states
   const [passwordValidation, setPasswordValidation] = useState({
@@ -42,23 +46,84 @@ export const EnhancedAuthModal = ({ isOpen, onClose, onLogin }: EnhancedAuthModa
   });
 
   // Mock usernames for demonstration (in real app, this would be an API call)
-  const existingUsernames = ['john_doe', 'jane_smith', 'admin', 'user123', 'test_user'];
+  const existingUsernames = ['john_doe', 'jane_smith', 'admin', 'user123', 'test_user', 'kanhaanu0415', 'kanha_meena', 'kanha0427', 'meena_kanha', 'kanha_user'];
+
+  // Generate username suggestions based on the entered username
+  const generateUsernameSuggestions = async (baseUsername: string): Promise<string[]> => {
+    try {
+      // Try to get suggestions from API first
+      const apiSuggestions = await getUsernameSuggestions(baseUsername);
+      if (apiSuggestions.length > 0) {
+        return apiSuggestions;
+      }
+    } catch (error) {
+      console.log('Using local username suggestions');
+    }
+    
+    // Fallback to local generation
+    const suggestions: string[] = [];
+    const base = baseUsername.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
+    
+    // Add numbers
+    for (let i = 1; i <= 5; i++) {
+      suggestions.push(`${base}${i}`);
+    }
+    
+    // Add underscores and hyphens
+    suggestions.push(`${base}_user`);
+    suggestions.push(`${base}-user`);
+    suggestions.push(`${base}_2024`);
+    suggestions.push(`${base}-2024`);
+    
+    // Add random combinations
+    const randomSuffixes = ['pro', 'dev', 'live', 'stream', 'gamer', 'creator'];
+    randomSuffixes.forEach(suffix => {
+      suggestions.push(`${base}_${suffix}`);
+      suggestions.push(`${base}-${suffix}`);
+    });
+    
+    // Filter out existing usernames and limit to 8 suggestions
+    return suggestions
+      .filter(suggestion => !existingUsernames.includes(suggestion))
+      .slice(0, 8);
+  };
 
   // Check if username is available
   const checkUsernameAvailability = async (username: string) => {
     if (username.length < 3) {
       setUsernameAvailable(null);
+      setUsernameSuggestions([]);
       return;
     }
 
     setCheckingUsername(true);
     
-    // Simulate API call to check username availability
-    setTimeout(() => {
-      const isAvailable = !existingUsernames.includes(username.toLowerCase());
+    try {
+      const isAvailable = await checkUsername(username);
       setUsernameAvailable(isAvailable);
+      
+      // If username is taken, generate suggestions
+      if (!isAvailable) {
+        setLoadingSuggestions(true);
+        try {
+          const suggestions = await generateUsernameSuggestions(username);
+          setUsernameSuggestions(suggestions);
+        } catch (error) {
+          console.error('Failed to generate suggestions:', error);
+          setUsernameSuggestions([]);
+        } finally {
+          setLoadingSuggestions(false);
+        }
+      } else {
+        setUsernameSuggestions([]);
+      }
+    } catch (error) {
+      console.error('Username check failed:', error);
+      setUsernameAvailable(false);
+      setUsernameSuggestions([]);
+    } finally {
       setCheckingUsername(false);
-    }, 500);
+    }
   };
 
   // Validate password strength
@@ -88,23 +153,31 @@ export const EnhancedAuthModal = ({ isOpen, onClose, onLogin }: EnhancedAuthModa
     }
   };
 
+  // Handle username suggestion click
+  const handleSuggestionClick = (suggestion: string) => {
+    setUsername(suggestion);
+    setUsernameSuggestions([]); // Clear suggestions when one is selected
+    checkUsernameAvailability(suggestion);
+  };
+
   const handleLogin = async () => {
     if (!password || (!email && !username)) return;
     
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Login:', { 
-        email: loginMethod === 'email' ? email : undefined, 
-        username: loginMethod === 'username' ? username : undefined, 
-        password, 
-        rememberMe 
-      });
+    try {
+      const identifier = loginMethod === 'email' ? email : username;
+      const success = await login(identifier, password);
+      
+      if (success) {
+        onLogin();
+        handleClose();
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+    } finally {
       setIsLoading(false);
-      onLogin();
-      handleClose();
-    }, 1500);
+    }
   };
 
   const handleRegister = async () => {
@@ -139,12 +212,22 @@ export const EnhancedAuthModal = ({ isOpen, onClose, onLogin }: EnhancedAuthModa
     
     setIsLoading(true);
     
-    // Simulate sending OTP
-    setTimeout(() => {
-      console.log('Sending OTP to:', email || phone);
+    try {
+      const success = await register(username, email, password, confirmPassword);
+      
+      if (success) {
+        toast({
+          title: 'Account Created!',
+          description: 'Welcome to Treesh! Your account has been created successfully.',
+        });
+        onLogin();
+        handleClose();
+      }
+    } catch (error) {
+      console.error('Registration failed:', error);
+    } finally {
       setIsLoading(false);
-      setStep('otp');
-    }, 1500);
+    }
   };
 
   const handleVerifyOTP = async () => {
@@ -198,6 +281,8 @@ export const EnhancedAuthModal = ({ isOpen, onClose, onLogin }: EnhancedAuthModa
     setLoginMethod('email');
     setUsernameAvailable(null);
     setCheckingUsername(false);
+    setUsernameSuggestions([]);
+    setLoadingSuggestions(false);
     setPasswordValidation({
       length: false,
       number: false,
@@ -423,10 +508,42 @@ export const EnhancedAuthModal = ({ isOpen, onClose, onLogin }: EnhancedAuthModa
                   Username can contain letters, numbers, underscores (_), and hyphens (-)
                 </div>
                 {usernameAvailable === false && (
-                  <div className="text-xs text-red-500 flex items-center space-x-1">
-                    <AlertCircle className="w-3 h-3" />
-                    <span>Username is already taken</span>
-                  </div>
+                  <>
+                    <div className="text-xs text-red-500 flex items-center space-x-1 mb-2">
+                      <AlertCircle className="w-3 h-3" />
+                      <span>Username is already taken</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="text-xs text-muted-foreground">
+                        Try one of these available usernames:
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {loadingSuggestions ? (
+                          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                            <div className="w-3 h-3 border-2 border-gray-300 border-t-primary rounded-full animate-spin" />
+                            <span>Generating suggestions...</span>
+                          </div>
+                        ) : usernameSuggestions.length > 0 ? (
+                          usernameSuggestions.map((suggestion, index) => (
+                            <Button
+                              key={index}
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="text-xs h-8 px-2 hover:bg-primary hover:text-white transition-colors"
+                              onClick={() => handleSuggestionClick(suggestion)}
+                            >
+                              {suggestion}
+                            </Button>
+                          ))
+                        ) : (
+                          <div className="text-xs text-muted-foreground">
+                            No suggestions available
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
