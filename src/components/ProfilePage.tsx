@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, Users, Lock, Shield, UserX, Edit, Save, X, AlertCircle, CheckCircle, Bookmark, Plus, Crown, Gift, Heart, MessageCircle, Share2, MoreHorizontal, Calendar, MapPin, Globe, Phone, Camera, Video, Music, Star, Eye, TrendingUp } from 'lucide-react';
+import { Settings, Users, Lock, Shield, UserX, Edit, Save, X, AlertCircle, CheckCircle, Bookmark, Plus, Crown, Gift, Heart, MessageCircle, Share2, MoreHorizontal, Calendar, MapPin, Globe, Phone, Camera, Video, Music, Star, Eye, TrendingUp, ChevronLeft, MoreVertical } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,6 +17,7 @@ import { PrivacySettings } from './PrivacySettings';
 import { PostDetail } from './PostDetail';
 import { SavedPosts } from './SavedPosts';
 import { StreamerSubscriptionModal } from './StreamerSubscriptionModal';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const mockUser = {
   id: '1',
@@ -163,6 +164,8 @@ export const ProfilePage = () => {
   const [showGiftSubscriptionModal, setShowGiftSubscriptionModal] = useState(false);
   const [followers, setFollowers] = useState(mockFollowers);
   const [following, setFollowing] = useState(mockFollowing);
+  const isMobile = useIsMobile();
+  const isMobile = useIsMobile();
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -363,102 +366,120 @@ export const ProfilePage = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <Card>
-        <CardContent className="pt-6">
-          {/* Quick Stats Bar */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">{user.followers}</div>
-              <div className="text-xs text-muted-foreground">Followers</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{user.following}</div>
-              <div className="text-xs text-muted-foreground">Following</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{user.posts}</div>
-              <div className="text-xs text-muted-foreground">Posts</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
-                {user.isStreamer ? '✓' : '-'}
-              </div>
-              <div className="text-xs text-muted-foreground">Streamer</div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Mobile Header */}
+      {isMobile && (
+        <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+          <div className="flex items-center space-x-3">
+            <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-gray-100">
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <div className="flex flex-col">
+              <h1 className="text-lg font-bold text-gray-900">Profile</h1>
+              <p className="text-sm text-gray-600">@{user.username}</p>
             </div>
           </div>
-          <div className="text-center mb-4">
-            <p className="text-sm text-muted-foreground">Click on your profile picture to update it</p>
-            <div className="flex justify-center space-x-2 mt-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setShowProfilePictureUpload(true)}
-                className="text-xs"
-              >
-                <Camera className="w-3 h-3 mr-1" />
-                Change Photo
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  toast({
-                    title: 'Profile Picture',
-                    description: 'Profile picture settings opened',
-                  });
-                }}
-                className="text-xs"
-              >
-                <Settings className="w-3 h-3 mr-1" />
-                Settings
-              </Button>
-            </div>
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-gray-100">
+              <MoreVertical className="h-5 w-5" />
+            </Button>
           </div>
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-            <div className="relative">
-              <Avatar 
-                className="w-32 h-32 cursor-pointer hover:opacity-80 hover:ring-4 hover:ring-primary/20 transition-all duration-200" 
-                onClick={() => setShowProfilePictureUpload(true)}
-                title="Click to change profile picture"
-              >
-                <AvatarImage src={user.avatar} />
-                <AvatarFallback className="text-2xl">{user.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <Button
-                size="sm"
-                className="absolute bottom-0 right-0 rounded-full w-8 h-8 p-0 bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl transition-all duration-200"
-                onClick={() => setShowProfilePictureUpload(true)}
-                title="Edit profile picture"
-              >
-                <Edit className="w-4 h-4" />
-              </Button>
-            </div>
-            
-            <div className="flex-1 text-center md:text-left">
-              <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                <h1 className="text-2xl font-bold">{user.name}</h1>
-                {user.verified && <Badge className="bg-blue-500">✓</Badge>}
-                {user.isPrivate && <Badge variant="outline">Private</Badge>}
+        </header>
+      )}
+
+      {/* Desktop Header */}
+      {!isMobile && (
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
+          </div>
+        </header>
+      )}
+
+      <div className="max-w-4xl mx-auto">
+        {/* Profile Header Section */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="px-4 lg:px-6 py-6">
+            {/* Profile Stats Row */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center space-x-8">
+                <div className="text-center">
+                  <div className="text-xl lg:text-2xl font-bold text-gray-900">{user.posts}</div>
+                  <div className="text-sm text-gray-600">Posts</div>
+                </div>
+                <div className="text-center cursor-pointer" onClick={() => setShowFollowers(true)}>
+                  <div className="text-xl lg:text-2xl font-bold text-gray-900">{user.followers}</div>
+                  <div className="text-sm text-gray-600">Followers</div>
+                </div>
+                <div className="text-center cursor-pointer" onClick={() => setShowFollowing(true)}>
+                  <div className="text-xl lg:text-2xl font-bold text-gray-900">{user.following}</div>
+                  <div className="text-sm text-gray-600">Following</div>
+                </div>
               </div>
-              <p className="text-muted-foreground mb-4">@{user.username}</p>
-              <div className="mb-4">
-                <p className="mb-2">{user.bio}</p>
-                <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+              {user.isStreamer && (
+                <div className="text-center">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div className="text-xs text-green-600 font-medium">Streamer</div>
+                </div>
+              )}
+            </div>
+
+            {/* Profile Info Row */}
+            <div className="flex flex-col lg:flex-row items-start gap-6">
+              {/* Profile Picture */}
+              <div className="relative mx-auto lg:mx-0">
+                <Avatar 
+                  className="w-24 h-24 lg:w-32 lg:h-32 cursor-pointer hover:opacity-80 transition-opacity ring-4 ring-gray-100" 
+                  onClick={() => setShowProfilePictureUpload(true)}
+                >
+                  <AvatarImage src={user.avatar} />
+                  <AvatarFallback className="text-3xl lg:text-4xl bg-gray-200">{user.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <Button
+                  size="sm"
+                  className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0 bg-red-500 hover:bg-red-600 text-white shadow-lg"
+                  onClick={() => setShowProfilePictureUpload(true)}
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Profile Details */}
+              <div className="flex-1 text-center lg:text-left">
+                <div className="flex items-center justify-center lg:justify-start gap-2 mb-2">
+                  <h2 className="text-xl lg:text-2xl font-bold text-gray-900">{user.name}</h2>
+                  {user.verified && (
+                    <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-3 h-3 text-white" />
+                    </div>
+                  )}
+                  {user.isPrivate && (
+                    <Badge variant="outline" className="text-xs">Private</Badge>
+                  )}
+                </div>
+                
+                <p className="text-gray-600 mb-3">@{user.username}</p>
+                
+                <p className="text-gray-800 mb-3 max-w-md mx-auto lg:mx-0">{user.bio}</p>
+                
+                {/* Contact Info */}
+                <div className="flex flex-wrap justify-center lg:justify-start gap-3 mb-4 text-sm text-gray-600">
                   {user.location && (
                     <div className="flex items-center space-x-1">
-                      <MapPin className="w-3 h-3" />
+                      <MapPin className="w-4 h-4" />
                       <span>{user.location}</span>
                     </div>
                   )}
                   {user.website && (
                     <div className="flex items-center space-x-1">
-                      <Globe className="w-3 h-3" />
+                      <Globe className="w-4 h-4" />
                       <a 
                         href={user.website} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="hover:text-primary transition-colors underline"
+                        className="hover:text-red-500 transition-colors underline"
                       >
                         Website
                       </a>
@@ -466,442 +487,427 @@ export const ProfilePage = () => {
                   )}
                   {user.phone && (
                     <div className="flex items-center space-x-1">
-                      <Phone className="w-3 h-3" />
+                      <Phone className="w-4 h-4" />
                       <span>{user.phone}</span>
                     </div>
                   )}
                 </div>
-              </div>
-              
-              <div className="flex justify-center md:justify-start gap-6 mb-4">
-                <div className="text-center cursor-pointer hover:text-primary transition-colors group" onClick={() => setShowFollowers(true)}>
-                  <div className="font-bold group-hover:scale-110 transition-transform">{user.followers}</div>
-                  <div className="text-sm text-muted-foreground">Followers</div>
-                  <div className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">Click to view</div>
-                </div>
-                <div className="text-center cursor-pointer hover:text-primary transition-colors group" onClick={() => setShowFollowing(true)}>
-                  <div className="font-bold group-hover:scale-110 transition-transform">{user.following}</div>
-                  <div className="text-sm text-muted-foreground">Following</div>
-                  <div className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">Click to view</div>
-                </div>
-                <div className="text-center cursor-pointer hover:text-primary transition-colors group">
-                  <div className="font-bold group-hover:scale-110 transition-transform">{user.posts}</div>
-                  <div className="text-sm text-muted-foreground">Posts</div>
-                  <div className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">View all</div>
-                </div>
-                {user.isStreamer && (
-                  <div className="text-center">
-                    <div className="font-bold text-green-600">✓</div>
-                    <div className="text-sm text-muted-foreground">Streamer</div>
-                    <div className="text-xs text-green-600">Active</div>
-                  </div>
-                )}
-              </div>
-              
-              <div className="flex gap-2 flex-wrap justify-center md:justify-start">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Edit Profile
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Edit Profile</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Name *</Label>
-                        <Input
-                          id="name"
-                          value={editName}
-                          onChange={(e) => {
-                            setEditName(e.target.value);
-                            if (errors.name) setErrors(prev => ({ ...prev, name: '' }));
-                          }}
-                          maxLength={50}
-                          className={errors.name ? 'border-red-500 focus:border-red-500' : ''}
-                        />
-                        {errors.name && (
-                          <div className="flex items-center space-x-2 text-red-600 text-sm">
-                            <AlertCircle className="w-4 h-4" />
-                            <span>{errors.name}</span>
-                          </div>
-                        )}
-                        <div className="text-xs text-muted-foreground text-right">
-                          {editName.length}/50
-                        </div>
-                      </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="bio">Bio</Label>
-                        <Textarea
-                          id="bio"
-                          value={editBio}
-                          onChange={(e) => {
-                            setEditBio(e.target.value);
-                            if (errors.bio) setErrors(prev => ({ ...prev, bio: '' }));
-                          }}
-                          maxLength={200}
-                          rows={3}
-                          className={errors.bio ? 'border-red-500 focus:border-red-500' : ''}
-                        />
-                        {errors.bio && (
-                          <div className="flex items-center space-x-2 text-red-600 text-sm">
-                            <AlertCircle className="w-4 h-4" />
-                            <span>{errors.bio}</span>
-                          </div>
-                        )}
-                        <div className="text-xs text-muted-foreground text-right">
-                          {editBio.length}/200
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="location">Location</Label>
-                        <Input
-                          id="location"
-                          value={editLocation}
-                          onChange={(e) => setEditLocation(e.target.value)}
-                          placeholder="City, Country"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="website">Website</Label>
-                        <Input
-                          id="website"
-                          value={editWebsite}
-                          onChange={(e) => {
-                            setEditWebsite(e.target.value);
-                            if (errors.website) setErrors(prev => ({ ...prev, website: '' }));
-                          }}
-                          placeholder="https://example.com"
-                          className={errors.website ? 'border-red-500 focus:border-red-500' : ''}
-                        />
-                        {errors.website && (
-                          <div className="flex items-center space-x-2 text-red-600 text-sm">
-                            <AlertCircle className="w-4 h-4" />
-                            <span>{errors.website}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Phone</Label>
-                        <Input
-                          id="phone"
-                          value={editPhone}
-                          onChange={(e) => {
-                            setEditPhone(e.target.value);
-                            if (errors.phone) setErrors(prev => ({ ...prev, phone: '' }));
-                          }}
-                          placeholder="+1 (555) 123-4567"
-                          className={errors.phone ? 'border-red-500 focus:border-red-500' : ''}
-                        />
-                        {errors.phone && (
-                          <div className="flex items-center space-x-2 text-red-600 text-sm">
-                            <AlertCircle className="w-4 h-4" />
-                            <span>{errors.phone}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          id="private"
-                          checked={isPrivate}
-                          onCheckedChange={handlePrivacyChange}
-                        />
-                        <Label htmlFor="private">Private Account</Label>
-                      </div>
-
-                      <div className="flex space-x-2 pt-4">
-                        <Button variant="outline" onClick={() => {
-                          setEditName(user.name);
-                          setEditBio(user.bio);
-                          setEditLocation(user.location);
-                          setEditWebsite(user.website);
-                          setEditPhone(user.phone);
-                          setErrors({});
-                        }} className="flex-1">
-                          <X className="w-4 h-4 mr-2" />
-                          Reset
-                        </Button>
-                        <Button onClick={handleSaveProfile} disabled={isSaving} className="flex-1">
-                          {isSaving ? (
-                            <div className="flex items-center space-x-2">
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              <span>Saving...</span>
+                {/* Action Buttons */}
+                <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-4">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-9">
+                        <Settings className="w-4 h-4 mr-2" />
+                        Edit Profile
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Edit Profile</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Name *</Label>
+                          <Input
+                            id="name"
+                            value={editName}
+                            onChange={(e) => {
+                              setEditName(e.target.value);
+                              if (errors.name) setErrors(prev => ({ ...prev, name: '' }));
+                            }}
+                            maxLength={50}
+                            className={errors.name ? 'border-red-500 focus:border-red-500' : ''}
+                          />
+                          {errors.name && (
+                            <div className="flex items-center space-x-2 text-red-600 text-sm">
+                              <AlertCircle className="w-4 h-4" />
+                              <span>{errors.name}</span>
                             </div>
-                          ) : (
-                            <>
-                              <Save className="w-4 h-4 mr-2" />
-                              Save Changes
-                            </>
                           )}
-                        </Button>
+                          <div className="text-xs text-muted-foreground text-right">
+                            {editName.length}/50
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="bio">Bio</Label>
+                          <Textarea
+                            id="bio"
+                            value={editBio}
+                            onChange={(e) => {
+                              setEditBio(e.target.value);
+                              if (errors.bio) setErrors(prev => ({ ...prev, bio: '' }));
+                            }}
+                            maxLength={200}
+                            rows={3}
+                            className={errors.bio ? 'border-red-500 focus:border-red-500' : ''}
+                          />
+                          {errors.bio && (
+                            <div className="flex items-center space-x-2 text-red-600 text-sm">
+                              <AlertCircle className="w-4 h-4" />
+                              <span>{errors.bio}</span>
+                            </div>
+                          )}
+                          <div className="text-xs text-muted-foreground text-right">
+                            {editBio.length}/200
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="location">Location</Label>
+                          <Input
+                            id="location"
+                            value={editLocation}
+                            onChange={(e) => setEditLocation(e.target.value)}
+                            placeholder="City, Country"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="website">Website</Label>
+                          <Input
+                            id="website"
+                            value={editWebsite}
+                            onChange={(e) => {
+                              setEditWebsite(e.target.value);
+                              if (errors.website) setErrors(prev => ({ ...prev, website: '' }));
+                            }}
+                            placeholder="https://example.com"
+                            className={errors.website ? 'border-red-500 focus:border-red-500' : ''}
+                          />
+                          {errors.website && (
+                            <div className="flex items-center space-x-2 text-red-600 text-sm">
+                              <AlertCircle className="w-4 h-4" />
+                              <span>{errors.website}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="phone">Phone</Label>
+                          <Input
+                            id="phone"
+                            value={editPhone}
+                            onChange={(e) => {
+                              setEditPhone(e.target.value);
+                              if (errors.phone) setErrors(prev => ({ ...prev, phone: '' }));
+                            }}
+                            placeholder="+1 (555) 123-4567"
+                            className={errors.phone ? 'border-red-500 focus:border-red-500' : ''}
+                          />
+                          {errors.phone && (
+                            <div className="flex items-center space-x-2 text-red-600 text-sm">
+                              <AlertCircle className="w-4 h-4" />
+                              <span>{errors.phone}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            id="private"
+                            checked={isPrivate}
+                            onCheckedChange={handlePrivacyChange}
+                          />
+                          <Label htmlFor="private">Private Account</Label>
+                        </div>
+
+                        <div className="flex space-x-2 pt-4">
+                          <Button variant="outline" onClick={() => {
+                            setEditName(user.name);
+                            setEditBio(user.bio);
+                            setEditLocation(user.location);
+                            setEditWebsite(user.website);
+                            setEditPhone(user.phone);
+                            setErrors({});
+                          }} className="flex-1">
+                            <X className="w-4 h-4 mr-2" />
+                            Reset
+                          </Button>
+                          <Button onClick={handleSaveProfile} disabled={isSaving} className="flex-1">
+                            {isSaving ? (
+                              <div className="flex items-center space-x-2">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                <span>Saving...</span>
+                              </div>
+                            ) : (
+                              <>
+                                <Save className="w-4 h-4 mr-2" />
+                                Save Changes
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-                
-                <Button variant="outline" onClick={() => setShowFollowers(true)}>
-                  <Users className="w-4 h-4 mr-2" />
-                  View Followers ({user.followers})
-                </Button>
+                    </DialogContent>
+                  </Dialog>
 
-                <Button variant="outline" onClick={() => setShowPrivacySettings(true)}>
-                  <Shield className="w-4 h-4 mr-2" />
-                  Privacy Settings
-                </Button>
+                  <Button variant="outline" size="sm" className="h-9" onClick={() => setShowPrivacySettings(true)}>
+                    <Shield className="w-4 h-4 mr-2" />
+                    Privacy
+                  </Button>
 
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    toast({
-                      title: 'Profile View',
-                      description: 'This would open a detailed profile view',
-                    });
-                  }}
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  View Profile
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    // Simulate sharing profile
-                    if (navigator.share) {
-                      navigator.share({
-                        title: `${user.name}'s Profile`,
-                        text: `Check out ${user.name}'s profile on Treesh!`,
-                        url: window.location.href
-                      });
-                    } else {
-                      // Fallback for browsers that don't support Web Share API
-                      navigator.clipboard.writeText(window.location.href);
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-9"
+                    onClick={() => {
                       toast({
-                        title: 'Profile Link Copied!',
-                        description: 'Profile link has been copied to clipboard',
+                        title: 'Profile View',
+                        description: 'This would open a detailed profile view',
                       });
-                    }
-                  }}
-                >
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Share Profile
-                </Button>
+                    }}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    View
+                  </Button>
 
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowStoryUpload(true)}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:from-purple-600 hover:to-pink-600"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Story
-                </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-9"
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({
+                          title: `${user.name}'s Profile`,
+                          text: `Check out ${user.name}'s profile on Treesh!`,
+                          url: window.location.href
+                        });
+                      } else {
+                        navigator.clipboard.writeText(window.location.href);
+                        toast({
+                          title: 'Profile Link Copied!',
+                          description: 'Profile link has been copied to clipboard',
+                        });
+                      }
+                    }}
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Share
+                  </Button>
+                </div>
 
-                {/* Subscription Buttons */}
-                <Button 
-                  className="bg-primary hover:bg-primary-dark text-white"
-                  onClick={handleSubscriptionClick}
-                >
-                  <Crown className="w-4 h-4 mr-2" />
-                  Subscribe
-                </Button>
+                {/* Premium Action Buttons */}
+                <div className="flex flex-wrap justify-center lg:justify-start gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-9 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:from-purple-600 hover:to-pink-600"
+                    onClick={() => setShowStoryUpload(true)}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Story
+                  </Button>
 
-                <Button 
-                  variant="outline"
-                  onClick={handleGiftSubscriptionClick}
-                >
-                  <Gift className="w-4 h-4 mr-2" />
-                  Gift Sub
-                </Button>
+                  <Button 
+                    className="h-9 bg-red-500 hover:bg-red-600 text-white"
+                    onClick={handleSubscriptionClick}
+                  >
+                    <Crown className="w-4 h-4 mr-2" />
+                    Subscribe
+                  </Button>
+
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="h-9"
+                    onClick={handleGiftSubscriptionClick}
+                  >
+                    <Gift className="w-4 h-4 mr-2" />
+                    Gift Sub
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="posts" className="flex items-center space-x-2">
-            <Camera className="w-4 h-4" />
-            <span>Posts</span>
-            <Badge variant="secondary" className="ml-1">{mockPosts.filter(p => p.type === 'post').length}</Badge>
-          </TabsTrigger>
-          <TabsTrigger value="reels" className="flex items-center space-x-2">
-            <Video className="w-4 h-4" />
-            <span>Reels</span>
-            <Badge variant="secondary" className="ml-1">{mockPosts.filter(p => p.type === 'reel').length}</Badge>
-          </TabsTrigger>
-          <TabsTrigger value="saved" className="flex items-center space-x-2">
-            <Bookmark className="w-4 h-4" />
-            <span>Saved</span>
-          </TabsTrigger>
-        </TabsList>
-        
-        {/* Tab Header with Actions */}
-        <div className="flex justify-between items-center mt-4">
-          <div>
-            <h3 className="text-lg font-semibold">
-              {activeTab === 'posts' && 'Your Posts'}
-              {activeTab === 'reels' && 'Your Reels'}
-              {activeTab === 'saved' && 'Saved Content'}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {activeTab === 'posts' && `Share your moments with ${user.followers} followers`}
-              {activeTab === 'reels' && 'Create engaging short videos'}
-              {activeTab === 'saved' && 'Your bookmarked content'}
-            </p>
+        </div>
+
+        {/* Content Tabs Section */}
+        <div className="bg-white">
+          <div className="px-4 lg:px-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-3 h-12">
+                <TabsTrigger value="posts" className="flex items-center space-x-2 text-sm">
+                  <Camera className="w-4 h-4" />
+                  <span className="hidden sm:inline">Posts</span>
+                  <Badge variant="secondary" className="ml-1 text-xs">{mockPosts.filter(p => p.type === 'post').length}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="reels" className="flex items-center space-x-2 text-sm">
+                  <Video className="w-4 h-4" />
+                  <span className="hidden sm:inline">Reels</span>
+                  <Badge variant="secondary" className="ml-1 text-xs">{mockPosts.filter(p => p.type === 'reel').length}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="saved" className="flex items-center space-x-2 text-sm">
+                  <Bookmark className="w-4 h-4" />
+                  <span className="hidden sm:inline">Saved</span>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
-          <div className="flex space-x-2">
-            {activeTab === 'posts' && (
-              <Button size="sm" variant="outline" onClick={() => setShowStoryUpload(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                New Post
-              </Button>
-            )}
-            {activeTab === 'reels' && (
-              <Button size="sm" variant="outline" onClick={() => setShowStoryUpload(true)}>
-                <Video className="w-4 h-4 mr-2" />
-                New Reel
-              </Button>
-            )}
-            <Button 
-              size="sm" 
-              variant="outline"
-              onClick={() => {
-                toast({
-                  title: 'Analytics',
-                  description: 'Post analytics and insights opened',
-                });
-              }}
-            >
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Analytics
-            </Button>
+
+          {/* Tab Content */}
+          <div className="px-4 lg:px-6 py-4">
+            {/* Tab Header with Actions */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {activeTab === 'posts' && 'Your Posts'}
+                  {activeTab === 'reels' && 'Your Reels'}
+                  {activeTab === 'saved' && 'Saved Content'}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {activeTab === 'posts' && `Share your moments with ${user.followers} followers`}
+                  {activeTab === 'reels' && 'Create engaging short videos'}
+                  {activeTab === 'saved' && 'Your bookmarked content'}
+                </p>
+              </div>
+              <div className="flex space-x-2">
+                {activeTab === 'posts' && (
+                  <Button size="sm" variant="outline" onClick={() => setShowStoryUpload(true)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    New Post
+                  </Button>
+                )}
+                {activeTab === 'reels' && (
+                  <Button size="sm" variant="outline" onClick={() => setShowStoryUpload(true)}>
+                    <Video className="w-4 h-4 mr-2" />
+                    New Reel
+                  </Button>
+                )}
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => {
+                    toast({
+                      title: 'Analytics',
+                      description: 'Post analytics and insights opened',
+                    });
+                  }}
+                >
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  Analytics
+                </Button>
+              </div>
+            </div>
+
+            {/* Posts Grid */}
+            <TabsContent value="posts" className="mt-0">
+              <div className="grid grid-cols-3 gap-1 lg:gap-2">
+                {mockPosts.filter(p => p.type === 'post').map((post) => (
+                  <div 
+                    key={post.id} 
+                    className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative group"
+                    onClick={() => handlePostClick(post)}
+                  >
+                    <img src={post.image} alt="Post" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-center">
+                        <div className="font-medium">{post.likes} likes</div>
+                        <div className="text-sm">{post.caption}</div>
+                      </div>
+                    </div>
+                    <div className="absolute top-2 left-2">
+                      <Badge variant="secondary" className="text-xs">
+                        <Camera className="w-3 h-3 mr-1" />
+                        Post
+                      </Badge>
+                    </div>
+                    <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <div className="flex space-x-1">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="w-6 h-6 p-0 rounded-full"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLikePost(post.id);
+                          }}
+                        >
+                          <Heart className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="w-6 h-6 p-0 rounded-full"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSavePost(post.id);
+                          }}
+                        >
+                          <Bookmark className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+
+            {/* Reels Grid */}
+            <TabsContent value="reels" className="mt-0">
+              <div className="grid grid-cols-3 gap-1 lg:gap-2">
+                {mockPosts.filter(p => p.type === 'reel').map((reel) => (
+                  <div 
+                    key={reel.id} 
+                    className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative group"
+                    onClick={() => handlePostClick(reel)}
+                  >
+                    <img src={reel.image} alt="Reel" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-center">
+                        <div className="font-medium">{reel.likes} likes</div>
+                        <div className="text-sm">{reel.caption}</div>
+                      </div>
+                    </div>
+                    <div className="absolute top-2 left-2">
+                      <Badge variant="secondary" className="text-xs">
+                        <Video className="w-3 h-3 mr-1" />
+                        Reel
+                      </Badge>
+                    </div>
+                    <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <div className="flex space-x-1">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="w-6 h-6 p-0 rounded-full"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLikePost(reel.id);
+                          }}
+                        >
+                          <Heart className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="w-6 h-6 p-0 rounded-full"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSavePost(reel.id);
+                          }}
+                        >
+                          <Bookmark className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+
+            {/* Saved Content */}
+            <TabsContent value="saved" className="mt-0">
+              <SavedPosts />
+            </TabsContent>
           </div>
         </div>
-        
-        <TabsContent value="posts" className="mt-6">
-          <div className="grid grid-cols-3 gap-2">
-            {mockPosts.filter(p => p.type === 'post').map((post) => (
-              <div 
-                key={post.id} 
-                className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative group"
-                onClick={() => handlePostClick(post)}
-              >
-                <img src={post.image} alt="Post" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-center">
-                    <div className="font-medium">{post.likes} likes</div>
-                    <div className="text-sm">{post.caption}</div>
-                  </div>
-                </div>
-                {/* Post Type Badge */}
-                <div className="absolute top-2 left-2">
-                  <Badge variant="secondary" className="text-xs">
-                    <Camera className="w-3 h-3 mr-1" />
-                    Post
-                  </Badge>
-                </div>
-                {/* Quick Actions */}
-                <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <div className="flex space-x-1">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="w-6 h-6 p-0 rounded-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleLikePost(post.id);
-                      }}
-                    >
-                      <Heart className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="w-6 h-6 p-0 rounded-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSavePost(post.id);
-                      }}
-                    >
-                      <Bookmark className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="reels" className="mt-6">
-          <div className="grid grid-cols-3 gap-2">
-            {mockPosts.filter(p => p.type === 'reel').map((reel) => (
-              <div 
-                key={reel.id} 
-                className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative group"
-                onClick={() => handlePostClick(reel)}
-              >
-                <img src={reel.image} alt="Reel" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-center">
-                    <div className="font-medium">{reel.likes} likes</div>
-                    <div className="text-sm">{reel.caption}</div>
-                  </div>
-                </div>
-                {/* Reel Type Badge */}
-                <div className="absolute top-2 left-2">
-                  <Badge variant="secondary" className="text-xs">
-                    <Video className="w-3 h-3 mr-1" />
-                    Reel
-                  </Badge>
-                </div>
-                {/* Quick Actions */}
-                <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <div className="flex space-x-1">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="w-6 h-6 p-0 rounded-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleLikePost(reel.id);
-                      }}
-                    >
-                      <Heart className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="w-6 h-6 p-0 rounded-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSavePost(reel.id);
-                      }}
-                    >
-                      <Bookmark className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="saved" className="mt-6">
-          <SavedPosts />
-        </TabsContent>
-      </Tabs>
+      </div>
 
       {/* Followers Modal */}
       <Dialog open={showFollowers} onOpenChange={setShowFollowers}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[80vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle>Followers ({followers.length})</DialogTitle>
           </DialogHeader>
@@ -957,7 +963,7 @@ export const ProfilePage = () => {
 
       {/* Following Modal */}
       <Dialog open={showFollowing} onOpenChange={setShowFollowing}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[80vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle>Following ({following.length})</DialogTitle>
           </DialogHeader>
@@ -1057,106 +1063,106 @@ export const ProfilePage = () => {
         />
       )}
 
-             {/* Streamer Subscription Modal */}
-       <StreamerSubscriptionModal
-         isOpen={showSubscriptionModal}
-         onClose={() => setShowSubscriptionModal(false)}
-         streamerName={user.name}
-         streamerId={user.id}
-         tiers={[]}
-       />
+      {/* Streamer Subscription Modal */}
+      <StreamerSubscriptionModal
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+        streamerName={user.name}
+        streamerId={user.id}
+        tiers={[]}
+      />
 
-             {/* Gift Subscription Modal */}
-       <Dialog open={showGiftSubscriptionModal} onOpenChange={setShowGiftSubscriptionModal}>
-         <DialogContent className="max-w-md">
-           <DialogHeader>
-             <DialogTitle>Gift Subscription to {user.name}</DialogTitle>
-           </DialogHeader>
-           <div className="space-y-4">
-             <p className="text-muted-foreground">Choose a subscription tier to gift to {user.name}!</p>
-             
-             <div className="space-y-3">
-               <div className="grid grid-cols-1 gap-3">
-                 <Button 
-                   variant="outline" 
-                   className="flex items-center justify-between p-4 h-auto"
-                   onClick={() => {
-                     toast({
-                       title: 'Gold Tier Gift',
-                       description: 'You selected Gold Tier ($9.99)',
-                     });
-                   }}
-                 >
-                   <div className="flex items-center space-x-3">
-                     <Star className="w-6 h-6 text-yellow-500" />
-                     <div className="text-left">
-                       <div className="font-semibold">Gold Tier</div>
-                       <div className="text-sm text-muted-foreground">$9.99/month</div>
-                     </div>
-                   </div>
-                   <Badge variant="outline">Select</Badge>
-                 </Button>
-                 
-                 <Button 
-                   variant="outline" 
-                   className="flex items-center justify-between p-4 h-auto"
-                   onClick={() => {
-                     toast({
-                       title: 'Diamond Tier Gift',
-                       description: 'You selected Diamond Tier ($16.99)',
-                     });
-                   }}
-                 >
-                   <div className="flex items-center space-x-3">
-                     <Heart className="w-6 h-6 text-red-500" />
-                     <div className="text-left">
-                       <div className="font-semibold">Diamond Tier</div>
-                       <div className="text-sm text-muted-foreground">$16.99/month</div>
-                     </div>
-                   </div>
-                   <Badge variant="outline">Select</Badge>
-                 </Button>
-                 
-                 <Button 
-                   variant="outline" 
-                   className="flex items-center justify-between p-4 h-auto"
-                   onClick={() => {
-                     toast({
-                       title: 'Chrome Tier Gift',
-                       description: 'You selected Chrome Tier ($39.99)',
-                     });
-                   }}
-                 >
-                   <div className="flex items-center space-x-3">
-                     <MessageCircle className="w-6 h-6 text-blue-500" />
-                     <div className="text-left">
-                       <div className="font-semibold">Chrome Tier</div>
-                       <div className="text-sm text-muted-foreground">$39.99/month</div>
-                     </div>
-                   </div>
-                   <Badge variant="outline">Select</Badge>
-                 </Button>
-               </div>
-             </div>
-             
-             <div className="pt-4 border-t">
-               <Button 
-                 className="w-full" 
-                 onClick={() => {
-                   toast({
-                     title: 'Gift Sent!',
-                     description: `Gift subscription sent to ${user.name}!`,
-                   });
-                   setShowGiftSubscriptionModal(false);
-                 }}
-               >
-                 <Gift className="w-4 h-4 mr-2" />
-                 Send Gift Subscription
-               </Button>
-             </div>
-           </div>
-         </DialogContent>
-       </Dialog>
+      {/* Gift Subscription Modal */}
+      <Dialog open={showGiftSubscriptionModal} onOpenChange={setShowGiftSubscriptionModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Gift Subscription to {user.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-muted-foreground">Choose a subscription tier to gift to {user.name}!</p>
+            
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-3">
+                <Button 
+                  variant="outline" 
+                  className="flex items-center justify-between p-4 h-auto"
+                  onClick={() => {
+                    toast({
+                      title: 'Gold Tier Gift',
+                      description: 'You selected Gold Tier ($9.99)',
+                    });
+                  }}
+                >
+                  <div className="flex items-center space-x-3">
+                    <Star className="w-6 h-6 text-yellow-500" />
+                    <div className="text-left">
+                      <div className="font-semibold">Gold Tier</div>
+                      <div className="text-sm text-muted-foreground">$9.99/month</div>
+                    </div>
+                  </div>
+                  <Badge variant="outline">Select</Badge>
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  className="flex items-center justify-between p-4 h-auto"
+                  onClick={() => {
+                    toast({
+                      title: 'Diamond Tier Gift',
+                      description: 'You selected Diamond Tier ($16.99)',
+                    });
+                  }}
+                >
+                  <div className="flex items-center space-x-3">
+                    <Heart className="w-6 h-6 text-red-500" />
+                    <div className="text-left">
+                      <div className="font-semibold">Diamond Tier</div>
+                      <div className="text-sm text-muted-foreground">$16.99/month</div>
+                    </div>
+                  </div>
+                  <Badge variant="outline">Select</Badge>
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  className="flex items-center justify-between p-4 h-auto"
+                  onClick={() => {
+                    toast({
+                      title: 'Chrome Tier Gift',
+                      description: 'You selected Chrome Tier ($39.99)',
+                    });
+                  }}
+                >
+                  <div className="flex items-center space-x-3">
+                    <MessageCircle className="w-6 h-6 text-blue-500" />
+                    <div className="text-left">
+                      <div className="font-semibold">Chrome Tier</div>
+                      <div className="text-sm text-muted-foreground">$39.99/month</div>
+                    </div>
+                  </div>
+                  <Badge variant="outline">Select</Badge>
+                </Button>
+              </div>
+            </div>
+            
+            <div className="pt-4 border-t">
+              <Button 
+                className="w-full" 
+                onClick={() => {
+                  toast({
+                    title: 'Gift Sent!',
+                    description: `Gift subscription sent to ${user.name}!`,
+                  });
+                  setShowGiftSubscriptionModal(false);
+                }}
+              >
+                <Gift className="w-4 h-4 mr-2" />
+                Send Gift Subscription
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

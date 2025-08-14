@@ -803,27 +803,27 @@ export const SubscriptionsPage = () => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-primary mb-2">Subscriptions</h1>
-        <p className="text-muted-foreground">Manage your streamer subscriptions and discover new creators</p>
+    <div className="max-w-6xl mx-auto p-3 sm:p-6">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Subscriptions</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Manage your streamer subscriptions and discover new creators</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-6">
-          <TabsTrigger value="overview" className="flex items-center space-x-2">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 mb-6 h-auto">
+          <TabsTrigger value="overview" className="flex items-center space-x-2 text-xs sm:text-sm">
             <Crown className="w-4 h-4" />
             <span>Overview</span>
           </TabsTrigger>
-          <TabsTrigger value="discover" className="flex items-center space-x-2">
+          <TabsTrigger value="discover" className="flex items-center space-x-2 text-xs sm:text-sm">
             <Users className="w-4 h-4" />
             <span>Discover</span>
           </TabsTrigger>
-          <TabsTrigger value="history" className="flex items-center space-x-2">
+          <TabsTrigger value="history" className="flex items-center space-x-2 text-xs sm:text-sm">
             <Calendar className="w-4 h-4" />
             <span>History</span>
           </TabsTrigger>
-          <TabsTrigger value="billing" className="flex items-center space-x-2">
+          <TabsTrigger value="billing" className="flex items-center space-x-2 text-xs sm:text-sm">
             <CreditCard className="w-4 h-4" />
             <span>Billing</span>
           </TabsTrigger>
@@ -848,7 +848,7 @@ export const SubscriptionsPage = () => {
 
       {/* Subscription Modal */}
       <Dialog open={showSubscriptionModal} onOpenChange={setShowSubscriptionModal}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="w-[95vw] max-w-md">
           <DialogHeader>
             <DialogTitle>Subscribe to {selectedStreamer?.name}</DialogTitle>
           </DialogHeader>

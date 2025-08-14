@@ -98,6 +98,7 @@ export const MobileNavigation = ({ activeTab, onTabChange }: NavigationProps) =>
     { id: 'home', label: 'Home', icon: Home, badge: 0 },
     { id: 'search', label: 'Search', icon: Search, badge: 0 },
     { id: 'reels', label: 'Reels', icon: Play, badge: 0 },
+    { id: 'arcade', label: 'Arcade', icon: Heart, badge: 0 },
     { id: 'subscriptions', label: 'Subs', icon: Crown, badge: 0 },
     { id: 'messages', label: 'Messages', icon: MessageCircle, badge: messages },
     { id: 'profile', label: 'Profile', icon: User, badge: 0 },

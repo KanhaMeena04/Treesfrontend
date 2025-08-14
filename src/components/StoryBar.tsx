@@ -161,15 +161,15 @@ export const StoryBar = () => {
   };
 
   return (
-    <div className="bg-white border-b border-gray-200 px-4 py-3">
-      <div className="flex items-center gap-4 overflow-x-auto">
+    <div className="bg-white border-b border-gray-200 px-3 sm:px-4 py-3">
+      <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto">
         {/* Create Story Button */}
-        <div className="flex flex-col items-center gap-2 min-w-[80px]">
+        <div className="flex flex-col items-center gap-2 min-w-[70px] sm:min-w-[80px] flex-shrink-0">
           <button
             onClick={() => setShowStoryUpload(true)}
-            className="w-16 h-16 rounded-full border-2 border-dashed border-gray-300 hover:border-primary hover:bg-primary/5 transition-colors flex items-center justify-center"
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-dashed border-gray-300 hover:border-primary hover:bg-primary/5 transition-colors flex items-center justify-center"
           >
-            <Plus className="w-6 h-6 text-gray-400" />
+            <Plus className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
           </button>
           <span className="text-xs text-gray-600 text-center">Create Story</span>
         </div>
@@ -181,10 +181,10 @@ export const StoryBar = () => {
           const isExpired = timeRemaining === 'Expired';
 
           return (
-            <div key={story.id} className="flex flex-col items-center gap-2 min-w-[80px]">
+            <div key={story.id} className="flex flex-col items-center gap-2 min-w-[70px] sm:min-w-[80px] flex-shrink-0">
               <div className="relative">
                 {/* Story Circle with Progress */}
-                <div className="w-16 h-16 rounded-full p-1 bg-gradient-to-r from-purple-500 to-pink-500">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full p-1 bg-gradient-to-r from-purple-500 to-pink-500">
                   <div className="w-full h-full rounded-full bg-white p-1">
                     <div className="w-full h-full rounded-full overflow-hidden relative">
                       <img
@@ -200,7 +200,7 @@ export const StoryBar = () => {
                           <circle
                             cx="50%"
                             cy="50%"
-                            r="30"
+                            r="25"
                             stroke="currentColor"
                             strokeWidth="2"
                             fill="transparent"
@@ -209,13 +209,13 @@ export const StoryBar = () => {
                           <circle
                             cx="50%"
                             cy="50%"
-                            r="30"
+                            r="25"
                             stroke="currentColor"
                             strokeWidth="2"
                             fill="transparent"
                             className="text-primary"
-                            strokeDasharray={`${2 * Math.PI * 30}`}
-                            strokeDashoffset={`${2 * Math.PI * 30 * (1 - progress / 100)}`}
+                            strokeDasharray={`${2 * Math.PI * 25}`}
+                            strokeDashoffset={`${2 * Math.PI * 25 * (1 - progress / 100)}`}
                             strokeLinecap="round"
                           />
                         </svg>
@@ -246,9 +246,9 @@ export const StoryBar = () => {
 
         {/* Expired Stories Info */}
         {expiredStories.length > 0 && (
-          <div className="flex flex-col items-center gap-2 min-w-[80px]">
-            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
-              <Clock className="w-6 h-6 text-gray-400" />
+          <div className="flex flex-col items-center gap-2 min-w-[70px] sm:min-w-[80px] flex-shrink-0">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 flex items-center justify-center">
+              <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
             </div>
             <span className="text-xs text-gray-500 text-center">
               {expiredStories.length} expired

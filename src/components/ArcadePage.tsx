@@ -431,17 +431,18 @@ export const ArcadePage = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-primary">Arcade – Matchmaking</h1>
-            <p className="text-muted-foreground">Swipe, match, and connect with amazing people</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-primary">Arcade – Matchmaking</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Swipe, match, and connect with amazing people</p>
           </div>
           
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 w-full sm:w-auto">
             <Button
               variant="outline"
               size="icon"
               onClick={() => setShowFilters(!showFilters)}
+              className="h-10 w-10"
             >
               <Filter className="w-4 h-4" />
             </Button>
@@ -449,6 +450,7 @@ export const ArcadePage = () => {
             <Button
               variant="outline"
               onClick={resetSwipeHistory}
+              className="h-10"
             >
               Reset
             </Button>
@@ -545,18 +547,18 @@ export const ArcadePage = () => {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="swipe">Swipe</TabsTrigger>
-            <TabsTrigger value="matches">Matches ({matches.length})</TabsTrigger>
-            <TabsTrigger value="stats">Stats</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 mb-6 h-12">
+            <TabsTrigger value="swipe" className="text-sm">Swipe</TabsTrigger>
+            <TabsTrigger value="matches" className="text-sm">Matches ({matches.length})</TabsTrigger>
+            <TabsTrigger value="stats" className="text-sm">Stats</TabsTrigger>
           </TabsList>
 
           {/* Swipe Tab */}
           <TabsContent value="swipe" className="space-y-6">
-            <Card className="max-w-md mx-auto">
+            <Card className="w-full max-w-md mx-auto">
               <CardContent className="p-0">
                 {/* Profile Image */}
-                <div className="relative h-96 bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-lg overflow-hidden">
+                <div className="relative h-80 sm:h-96 bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-lg overflow-hidden">
                   <img
                     src={currentUser.photos[currentImageIndex]}
                     alt={currentUser.name}
@@ -621,32 +623,32 @@ export const ArcadePage = () => {
 
                 {/* Action Buttons */}
                 <div className="p-4">
-                  <div className="flex justify-center space-x-4 mb-4">
+                  <div className="flex justify-center space-x-3 sm:space-x-4 mb-4">
                     <Button
                       variant="outline"
                       size="icon"
-                      className="w-12 h-12 rounded-full border-red-300 hover:border-red-400"
+                      className="w-14 h-14 sm:w-12 sm:h-12 rounded-full border-red-300 hover:border-red-400"
                       onClick={() => handleDislike(currentUser.id)}
                     >
-                      <X className="w-6 h-6 text-red-500" />
+                      <X className="w-7 h-7 sm:w-6 sm:h-6 text-red-500" />
                     </Button>
                     
                     <Button
                       variant="outline"
                       size="icon"
-                      className="w-12 h-12 rounded-full border-yellow-300 hover:border-yellow-400"
+                      className="w-14 h-14 sm:w-12 sm:h-12 rounded-full border-yellow-300 hover:border-yellow-400"
                       onClick={() => handleSuperLike(currentUser.id)}
                     >
-                      <Star className="w-6 h-6 text-yellow-500" />
+                      <Star className="w-7 h-7 sm:w-6 sm:h-6 text-yellow-500" />
                     </Button>
                     
                     <Button
                       variant="outline"
                       size="icon"
-                      className="w-12 h-12 rounded-full border-green-300 hover:border-green-400"
+                      className="w-14 h-14 sm:w-12 sm:h-12 rounded-full border-green-300 hover:border-green-400"
                       onClick={() => handleLike(currentUser.id)}
                     >
-                      <Heart className="w-6 h-6 text-green-500" />
+                      <Heart className="w-7 h-7 sm:w-6 sm:h-6 text-green-500" />
                     </Button>
                   </div>
                   
@@ -669,7 +671,7 @@ export const ArcadePage = () => {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {matches.map((match) => (
                   <Card key={match.id} className="hover:shadow-lg transition-shadow cursor-pointer">
                     <CardContent className="p-4">
@@ -731,7 +733,7 @@ export const ArcadePage = () => {
 
           {/* Stats Tab */}
           <TabsContent value="stats" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <Card>
                 <CardContent className="p-6 text-center">
                   <Heart className="w-12 h-12 mx-auto mb-4 text-red-500" />
@@ -757,7 +759,7 @@ export const ArcadePage = () => {
               </Card>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Card>
                 <CardContent className="p-6 text-center">
                   <TrendingUp className="w-12 h-12 mx-auto mb-4 text-green-500" />
@@ -781,7 +783,7 @@ export const ArcadePage = () => {
 
         {/* Match Notification */}
         {showMatchNotification && matchedUser && (
-          <div className="fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm">
+          <div className="fixed top-4 left-4 right-4 sm:right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm mx-auto sm:mx-0">
             <div className="flex items-center space-x-3">
               <Heart className="w-6 h-6" />
               <div>
@@ -804,7 +806,7 @@ export const ArcadePage = () => {
 
         {/* Chat Modal */}
         <Dialog open={showChat} onOpenChange={setShowChat}>
-          <DialogContent className="max-w-2xl max-h-[80vh]">
+          <DialogContent className="w-[95vw] max-w-2xl max-h-[80vh]">
             <DialogHeader>
               <DialogTitle className="flex items-center space-x-2">
                 <MessageCircle className="w-5 h-5" />
@@ -831,7 +833,7 @@ export const ArcadePage = () => {
                         key={index}
                         type="text"
                         maxLength={1}
-                        className="w-12 h-12 text-center text-lg font-mono"
+                        className="w-14 h-14 sm:w-12 sm:h-12 text-center text-lg font-mono"
                         value={chatPin[index] || ''}
                         onChange={(e) => {
                           const newPin = chatPin.split('');
@@ -939,7 +941,7 @@ export const ArcadePage = () => {
 
         {/* Report Modal */}
         <Dialog open={showReportModal} onOpenChange={setShowReportModal}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="w-[95vw] max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center space-x-2">
                 <Flag className="w-5 h-5 text-red-500" />

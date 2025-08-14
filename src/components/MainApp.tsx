@@ -300,6 +300,10 @@ export const MainApp = ({ onShowAdmin }: MainAppProps) => {
               <DropdownMenuItem onClick={() => handleUpload('story')} className="font-opensans">Add Story</DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleUpload('reel')} className="font-opensans">Create Reel</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setGoLiveModalOpen(true)} className="font-opensans">Go Live</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setActiveTab('arcade')} className="font-opensans">
+                <Heart className="w-4 h-4 mr-2" />
+                Arcade
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
@@ -328,6 +332,10 @@ export const MainApp = ({ onShowAdmin }: MainAppProps) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setActiveTab('profile')} className="font-opensans">Profile</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setActiveTab('arcade')} className="font-opensans">
+                <Heart className="w-4 h-4 mr-2" />
+                Arcade
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setActiveTab('discover-streamers')} className="font-opensans">
                 <Crown className="w-4 h-4 mr-2" />
                 Discover Streamers

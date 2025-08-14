@@ -89,6 +89,7 @@ export const ReelsViewer = () => {
           autoPlay
           muted={muted}
           playsInline
+          controls={false}
         >
           <source src={reel.video} type="video/mp4" />
         </video>

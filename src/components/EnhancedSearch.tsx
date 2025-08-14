@@ -254,16 +254,16 @@ export const EnhancedSearch = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-3 sm:p-6">
       <div className="max-w-4xl mx-auto">
         {/* Search Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-4">Search</h1>
+        <div className="mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Search</h1>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               placeholder="Search users, posts, hashtags, reels..."
-              className="pl-10 font-inter text-lg"
+              className="pl-10 font-inter text-base sm:text-lg"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -271,9 +271,9 @@ export const EnhancedSearch = () => {
         </div>
 
         {/* Search Filters */}
-        <div className="flex flex-wrap gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mb-4 sm:mb-6">
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-full sm:w-32">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
             <SelectContent>
@@ -286,7 +286,7 @@ export const EnhancedSearch = () => {
           </Select>
 
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-full sm:w-32">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -301,15 +301,15 @@ export const EnhancedSearch = () => {
         {searchQuery && (
           <div>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="all">All ({results.length})</TabsTrigger>
-                <TabsTrigger value="users">
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+                <TabsTrigger value="all" className="text-xs sm:text-sm">All ({results.length})</TabsTrigger>
+                <TabsTrigger value="users" className="text-xs sm:text-sm">
                   Users ({results.filter(r => r.type === 'user').length})
                 </TabsTrigger>
-                <TabsTrigger value="posts">
+                <TabsTrigger value="posts" className="text-xs sm:text-sm">
                   Posts ({results.filter(r => r.type === 'post').length})
                 </TabsTrigger>
-                <TabsTrigger value="hashtags">
+                <TabsTrigger value="hashtags" className="text-xs sm:text-sm">
                   Hashtags ({results.filter(r => r.type === 'hashtag').length})
                 </TabsTrigger>
               </TabsList>
@@ -365,22 +365,22 @@ export const EnhancedSearch = () => {
               Search for users, posts, hashtags, and reels
             </p>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-              <div className="text-center p-4 rounded-lg bg-gray-50">
-                <User className="w-8 h-8 text-blue-500 mx-auto mb-2" />
-                <p className="text-sm font-medium">Users</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-2xl mx-auto">
+              <div className="text-center p-3 sm:p-4 rounded-lg bg-gray-50">
+                <User className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 mx-auto mb-2" />
+                <p className="text-xs sm:text-sm font-medium">Users</p>
               </div>
-              <div className="text-center p-4 rounded-lg bg-gray-50">
-                <Image className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                <p className="text-sm font-medium">Posts</p>
+              <div className="text-center p-3 sm:p-4 rounded-lg bg-gray-50">
+                <Image className="w-6 h-6 sm:w-8 sm:h-8 text-green-500 mx-auto mb-2" />
+                <p className="text-xs sm:text-sm font-medium">Posts</p>
               </div>
-              <div className="text-center p-4 rounded-lg bg-gray-50">
-                <Hash className="w-8 h-8 text-purple-500 mx-auto mb-2" />
-                <p className="text-sm font-medium">Hashtags</p>
+              <div className="text-center p-3 sm:p-4 rounded-lg bg-gray-50">
+                <Hash className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500 mx-auto mb-2" />
+                <p className="text-xs sm:text-sm font-medium">Hashtags</p>
               </div>
-              <div className="text-center p-4 rounded-lg bg-gray-50">
-                <Video className="w-8 h-8 text-red-500 mx-auto mb-2" />
-                <p className="text-sm font-medium">Reels</p>
+              <div className="text-center p-3 sm:p-4 rounded-lg bg-gray-50">
+                <Video className="w-6 h-6 sm:w-8 sm:h-8 text-red-500 mx-auto mb-2" />
+                <p className="text-xs sm:text-sm font-medium">Reels</p>
               </div>
             </div>
           </div>

@@ -5,9 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, Search, MoreVertical, Image, Paperclip, AlertCircle, Smile, Mic, Video } from 'lucide-react';
+import { Send, Search, MoreVertical, Image, Paperclip, AlertCircle, Smile, Mic, Video, ArrowLeft, Phone, Video as VideoCall } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const mockChats = [
   {
@@ -71,6 +72,8 @@ export const MessagingPage = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [messageError, setMessageError] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [showChatList, setShowChatList] = useState(true);
+  const isMobile = useIsMobile();
 
   const validateMessage = (message: string): boolean => {
     if (!message.trim()) {
@@ -194,255 +197,554 @@ export const MessagingPage = () => {
     });
   };
 
+  const handleChatSelect = (chat: typeof mockChats[0]) => {
+    setSelectedChat(chat);
+    if (isMobile) {
+      setShowChatList(false);
+    }
+  };
+
+  const handleBackToChats = () => {
+    setShowChatList(true);
+  };
+
   return (
-    <div className="h-screen flex">
-      {/* Chat List */}
-      <div className="w-80 border-r bg-white">
-        <div className="p-4 border-b">
-          <h2 className="text-xl font-bold mb-4">Messages</h2>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search conversations..."
-              className="pl-10"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </div>
-        
-        <ScrollArea className="flex-1">
-          {filteredChats.length === 0 ? (
-            <div className="p-4 text-center text-muted-foreground">
-              <p>No conversations found</p>
-              <p className="text-sm">Try a different search term</p>
+    <div className="h-screen flex bg-gray-50">
+      {/* Mobile: Chat List View */}
+      {isMobile && showChatList && (
+        <div className="w-full flex flex-col bg-white">
+          {/* Header */}
+          <div className="p-4 border-b bg-white sticky top-0 z-10 shadow-sm">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-900">Messages</h2>
+              <Button variant="ghost" size="icon" className="hover:bg-gray-100 active:bg-gray-200">
+                <MoreVertical className="w-5 h-5" />
+              </Button>
             </div>
-          ) : (
-            filteredChats.map((chat) => (
-              <div
-                key={chat.id}
-                className={`p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors ${
-                  selectedChat.id === chat.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
-                }`}
-                onClick={() => setSelectedChat(chat)}
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="relative">
-                    <Avatar className="w-12 h-12 cursor-pointer hover:opacity-80 transition-opacity">
-                      <AvatarImage src={chat.user.avatar} />
-                      <AvatarFallback>{chat.user.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    {chat.user.online && (
-                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
-                    )}
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-center">
-                      <h3 className="font-medium truncate">{chat.user.name}</h3>
-                      <div className="flex items-center space-x-2">
-                        {chat.type === 'match' && (
-                          <Badge variant="secondary" className="text-xs">Match</Badge>
-                        )}
-                        <span className="text-xs text-muted-foreground">{chat.timestamp}</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <p className="text-sm text-muted-foreground truncate">{chat.lastMessage}</p>
-                      {chat.unread > 0 && (
-                        <Badge className="bg-primary text-white text-xs">
-                          {chat.unread}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </ScrollArea>
-      </div>
-      
-      {/* Chat Window */}
-      <div className="flex-1 flex flex-col">
-        {/* Chat Header */}
-        <div className="p-4 border-b bg-white flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Avatar className="w-10 h-10 cursor-pointer hover:opacity-80 transition-opacity">
-              <AvatarImage src={selectedChat.user.avatar} />
-              <AvatarFallback>{selectedChat.user.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div>
-              <h3 className="font-medium">{selectedChat.user.name}</h3>
-              <p className="text-sm text-muted-foreground">
-                {selectedChat.user.online ? (
-                  <span className="flex items-center space-x-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full" />
-                    <span>Online</span>
-                  </span>
-                ) : (
-                  'Last seen recently'
-                )}
-              </p>
+            <div className="relative mt-4">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search conversations..."
+                className="pl-10 h-11 text-base"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
           </div>
           
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-gray-100">
-                <MoreVertical className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleBlockUser(selectedChat.id)}>
-                Block User
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleReportUser(selectedChat.id)}>
-                Report User
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => handleDeleteChat(selectedChat.id)}
-                className="text-red-600"
-              >
-                Delete Chat
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        
-        {/* Messages */}
-        <ScrollArea className="flex-1 p-4">
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.isMe ? 'justify-end' : 'justify-start'}`}
-              >
+          {/* Chat List */}
+          <ScrollArea className="flex-1">
+            {filteredChats.length === 0 ? (
+              <div className="p-8 text-center text-muted-foreground">
+                <p className="text-lg font-medium mb-2">No conversations found</p>
+                <p className="text-sm">Try a different search term</p>
+              </div>
+            ) : (
+              filteredChats.map((chat) => (
                 <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                    message.isMe
-                      ? 'bg-primary text-white'
-                      : 'bg-gray-200 text-gray-900'
-                  }`}
+                  key={chat.id}
+                  className="p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors active:bg-gray-100 touch-manipulation"
+                  onClick={() => handleChatSelect(chat)}
                 >
-                  <p>{message.content}</p>
-                  <p className={`text-xs mt-1 ${
-                    message.isMe ? 'text-blue-100' : 'text-gray-500'
-                  }`}>
-                    {message.timestamp}
+                  <div className="flex items-center space-x-3">
+                    <div className="relative flex-shrink-0">
+                      <Avatar className="w-14 h-14 ring-2 ring-gray-100">
+                        <AvatarImage src={chat.user.avatar} />
+                        <AvatarFallback className="text-lg font-semibold">{chat.user.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      {chat.user.online && (
+                        <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-3 border-white shadow-sm" />
+                      )}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start mb-1">
+                        <h3 className="font-semibold text-gray-900 truncate text-base">{chat.user.name}</h3>
+                        <div className="flex items-center space-x-2 flex-shrink-0">
+                          {chat.type === 'match' && (
+                            <Badge variant="secondary" className="text-xs px-2 py-1">Match</Badge>
+                          )}
+                          <span className="text-xs text-muted-foreground">{chat.timestamp}</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <p className="text-sm text-muted-foreground truncate flex-1 mr-2">{chat.lastMessage}</p>
+                        {chat.unread > 0 && (
+                          <Badge className="bg-primary text-white text-xs px-2 py-1 min-w-[20px] h-5 flex items-center justify-center">
+                            {chat.unread}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </ScrollArea>
+        </div>
+      )}
+
+      {/* Mobile: Chat View */}
+      {isMobile && !showChatList && (
+        <div className="w-full flex flex-col bg-white">
+          {/* Chat Header */}
+          <div className="p-4 border-b bg-white sticky top-0 z-10 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleBackToChats}
+                  className="hover:bg-gray-100 active:bg-gray-200 -ml-2 h-10 w-10"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+                <Avatar className="w-11 h-11 ring-2 ring-gray-100">
+                  <AvatarImage src={selectedChat.user.avatar} />
+                  <AvatarFallback className="text-lg font-semibold">{selectedChat.user.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-base">{selectedChat.user.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedChat.user.online ? (
+                      <span className="flex items-center space-x-1">
+                        <div className="w-2.5 h-2.5 bg-green-500 rounded-full" />
+                        <span>Online</span>
+                      </span>
+                    ) : (
+                      'Last seen recently'
+                    )}
                   </p>
                 </div>
               </div>
-            ))}
-            
-            {/* Typing Indicator */}
-            {isTyping && (
-              <div className="flex justify-start">
-                <div className="bg-gray-200 text-gray-900 px-4 py-2 rounded-lg">
-                  <div className="flex items-center space-x-1">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                    </div>
-                    <span className="text-xs text-gray-500 ml-2">typing...</span>
+              
+              <div className="flex items-center space-x-1">
+                <Button variant="ghost" size="icon" className="hover:bg-gray-100 active:bg-gray-200 h-10 w-10">
+                  <Phone className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="hover:bg-gray-100 active:bg-gray-200 h-10 w-10">
+                  <VideoCall className="w-4 h-4" />
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="hover:bg-gray-100 active:bg-gray-200 h-10 w-10">
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => handleBlockUser(selectedChat.id)}>
+                      Block User
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleReportUser(selectedChat.id)}>
+                      Report User
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => handleDeleteChat(selectedChat.id)}
+                      className="text-red-600"
+                    >
+                      Delete Chat
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          </div>
+          
+          {/* Messages */}
+          <ScrollArea className="flex-1 p-4 bg-gray-50">
+            <div className="space-y-3">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.isMe ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-[80%] px-4 py-3 rounded-2xl shadow-sm ${
+                      message.isMe
+                        ? 'bg-primary text-white'
+                        : 'bg-white text-gray-900 border border-gray-200'
+                    }`}
+                  >
+                    <p className="text-sm leading-relaxed">{message.content}</p>
+                    <p className={`text-xs mt-2 ${
+                      message.isMe ? 'text-blue-100' : 'text-gray-500'
+                    }`}>
+                      {message.timestamp}
+                    </p>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
-        
-        {/* Message Input */}
-        <div className="p-4 border-t bg-white">
-          <div className="space-y-3">
-            {/* Error Message */}
-            {messageError && (
-              <div className="flex items-center space-x-2 text-red-600 text-sm">
-                <AlertCircle className="w-4 h-4" />
-                <span>{messageError}</span>
-              </div>
-            )}
-            
-            <div className="flex items-center space-x-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => handleAttachment('file')}
-                className="hover:bg-gray-100"
-              >
-                <Paperclip className="w-4 h-4" />
-              </Button>
+              ))}
               
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => handleAttachment('image')}
-                className="hover:bg-gray-100"
-              >
-                <Image className="w-4 h-4" />
-              </Button>
-              
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => handleAttachment('video')}
-                className="hover:bg-gray-100"
-              >
-                <Video className="w-4 h-4" />
-              </Button>
-              
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={handleVoiceMessage}
-                className="hover:bg-gray-100"
-              >
-                <Mic className="w-4 h-4" />
-              </Button>
-              
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={handleEmoji}
-                className="hover:bg-gray-100"
-              >
-                <Smile className="w-4 h-4" />
-              </Button>
-              
-              <Input
-                placeholder="Type a message..."
-                value={newMessage}
-                onChange={(e) => {
-                  setNewMessage(e.target.value);
-                  if (messageError) setMessageError('');
-                }}
-                onKeyPress={handleKeyPress}
-                className="flex-1"
-                maxLength={1000}
-              />
-              
-              <Button 
-                onClick={handleSendMessage} 
-                disabled={!newMessage.trim() || isSending}
-                size="icon"
-                className="hover:bg-primary-dark"
-              >
-                {isSending ? (
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Send className="w-4 h-4" />
-                )}
-              </Button>
+              {/* Typing Indicator */}
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="bg-white text-gray-900 px-4 py-3 rounded-2xl border border-gray-200 shadow-sm">
+                    <div className="flex items-center space-x-2">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                      </div>
+                      <span className="text-xs text-gray-500">typing...</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-            
-            {/* Character Count */}
-            <div className="text-xs text-muted-foreground text-right">
-              {newMessage.length}/1000 characters
+          </ScrollArea>
+          
+          {/* Message Input */}
+          <div className="p-4 border-t bg-white shadow-lg">
+            <div className="space-y-3">
+              {/* Error Message */}
+              {messageError && (
+                <div className="flex items-center space-x-2 text-red-600 text-sm bg-red-50 p-2 rounded-lg">
+                  <AlertCircle className="w-4 h-4" />
+                  <span>{messageError}</span>
+                </div>
+              )}
+              
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => handleAttachment('file')}
+                  className="hover:bg-gray-100 active:bg-gray-200 h-10 w-10"
+                >
+                  <Paperclip className="w-4 h-4" />
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => handleAttachment('image')}
+                  className="hover:bg-gray-100 active:bg-gray-200 h-10 w-10"
+                >
+                  <Image className="w-4 h-4" />
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => handleAttachment('video')}
+                  className="hover:bg-gray-100 active:bg-gray-200 h-10 w-10"
+                >
+                  <Video className="w-4 h-4" />
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleVoiceMessage}
+                  className="hover:bg-gray-100 active:bg-gray-200 h-10 w-10"
+                >
+                  <Mic className="w-4 h-4" />
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleEmoji}
+                  className="hover:bg-gray-100 active:bg-gray-200 h-10 w-10"
+                >
+                  <Smile className="w-4 h-4" />
+                </Button>
+                
+                <Input
+                  placeholder="Type a message..."
+                  value={newMessage}
+                  onChange={(e) => {
+                    setNewMessage(e.target.value);
+                    if (messageError) setMessageError('');
+                  }}
+                  onKeyPress={handleKeyPress}
+                  className="flex-1 h-11 text-base"
+                  maxLength={1000}
+                />
+                
+                <Button 
+                  onClick={handleSendMessage} 
+                  disabled={!newMessage.trim() || isSending}
+                  size="icon"
+                  className="hover:bg-primary-dark active:bg-primary-dark/90 h-11 w-11"
+                >
+                  {isSending ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+              
+              {/* Character Count */}
+              <div className="text-xs text-muted-foreground text-right">
+                {newMessage.length}/1000 characters
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Desktop: Split Pane Layout */}
+      {!isMobile && (
+        <>
+          {/* Chat List */}
+          <div className="w-80 border-r bg-white">
+            <div className="p-4 border-b">
+              <h2 className="text-xl font-bold mb-4">Messages</h2>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Search conversations..."
+                  className="pl-10"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+            </div>
+            
+            <ScrollArea className="flex-1">
+              {filteredChats.length === 0 ? (
+                <div className="p-4 text-center text-muted-foreground">
+                  <p>No conversations found</p>
+                  <p className="text-sm">Try a different search term</p>
+                </div>
+              ) : (
+                filteredChats.map((chat) => (
+                  <div
+                    key={chat.id}
+                    className={`p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors ${
+                      selectedChat.id === chat.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                    }`}
+                    onClick={() => setSelectedChat(chat)}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <Avatar className="w-12 h-12 cursor-pointer hover:opacity-80 transition-opacity">
+                          <AvatarImage src={chat.user.avatar} />
+                          <AvatarFallback>{chat.user.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        {chat.user.online && (
+                          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
+                        )}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-center">
+                          <h3 className="font-medium truncate">{chat.user.name}</h3>
+                          <div className="flex items-center space-x-2">
+                            {chat.type === 'match' && (
+                              <Badge variant="secondary" className="text-xs">Match</Badge>
+                            )}
+                            <span className="text-xs text-muted-foreground">{chat.timestamp}</span>
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <p className="text-sm text-muted-foreground truncate">{chat.lastMessage}</p>
+                          {chat.unread > 0 && (
+                            <Badge className="bg-primary text-white text-xs">
+                              {chat.unread}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </ScrollArea>
+          </div>
+          
+          {/* Chat Window */}
+          <div className="flex-1 flex flex-col">
+            {/* Chat Header */}
+            <div className="p-4 border-b bg-white flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Avatar className="w-10 h-10 cursor-pointer hover:opacity-80 transition-opacity">
+                  <AvatarImage src={selectedChat.user.avatar} />
+                  <AvatarFallback>{selectedChat.user.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="font-medium">{selectedChat.user.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedChat.user.online ? (
+                      <span className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-green-500 rounded-full" />
+                        <span>Online</span>
+                      </span>
+                    ) : (
+                      'Last seen recently'
+                    )}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="icon" className="hover:bg-gray-100">
+                  <Phone className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="hover:bg-gray-100">
+                  <VideoCall className="w-4 h-4" />
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="hover:bg-gray-100">
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleBlockUser(selectedChat.id)}>
+                      Block User
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleReportUser(selectedChat.id)}>
+                      Report User
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => handleDeleteChat(selectedChat.id)}
+                      className="text-red-600"
+                    >
+                      Delete Chat
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+            
+            {/* Messages */}
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-4">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex ${message.isMe ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                        message.isMe
+                          ? 'bg-primary text-white'
+                          : 'bg-gray-200 text-gray-900'
+                      }`}
+                    >
+                      <p>{message.content}</p>
+                      <p className={`text-xs mt-1 ${
+                        message.isMe ? 'text-blue-100' : 'text-gray-500'
+                      }`}>
+                        {message.timestamp}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                
+                {/* Typing Indicator */}
+                {isTyping && (
+                  <div className="flex justify-start">
+                    <div className="bg-gray-200 text-gray-900 px-4 py-2 rounded-lg">
+                      <div className="flex items-center space-x-1">
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                          <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                          <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                        </div>
+                        <span className="text-xs text-gray-500 ml-2">typing...</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+            
+            {/* Message Input */}
+            <div className="p-4 border-t bg-white">
+              <div className="space-y-3">
+                {/* Error Message */}
+                {messageError && (
+                  <div className="flex items-center space-x-2 text-red-600 text-sm">
+                    <AlertCircle className="w-4 h-4" />
+                    <span>{messageError}</span>
+                  </div>
+                )}
+                
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => handleAttachment('file')}
+                    className="hover:bg-gray-100"
+                  >
+                    <Paperclip className="w-4 h-4" />
+                  </Button>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => handleAttachment('image')}
+                    className="hover:bg-gray-100"
+                  >
+                    <Image className="w-4 h-4" />
+                  </Button>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => handleAttachment('video')}
+                    className="hover:bg-gray-100"
+                  >
+                    <Video className="w-4 h-4" />
+                  </Button>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={handleVoiceMessage}
+                    className="hover:bg-gray-100"
+                  >
+                    <Mic className="w-4 h-4" />
+                  </Button>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={handleEmoji}
+                    className="hover:bg-gray-100"
+                  >
+                    <Smile className="w-4 h-4" />
+                  </Button>
+                  
+                  <Input
+                    placeholder="Type a message..."
+                    value={newMessage}
+                    onChange={(e) => {
+                      setNewMessage(e.target.value);
+                      if (messageError) setMessageError('');
+                    }}
+                    onKeyPress={handleKeyPress}
+                    className="flex-1"
+                    maxLength={1000}
+                  />
+                  
+                  <Button 
+                    onClick={handleSendMessage} 
+                    disabled={!newMessage.trim() || isSending}
+                    size="icon"
+                    className="hover:bg-primary-dark"
+                  >
+                    {isSending ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Send className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
+                
+                {/* Character Count */}
+                <div className="text-xs text-muted-foreground text-right">
+                  {newMessage.length}/1000 characters
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

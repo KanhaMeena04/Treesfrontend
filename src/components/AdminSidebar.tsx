@@ -23,6 +23,8 @@ import {
 interface AdminSidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
+  isMobile?: boolean;
+  onClose?: () => void;
 }
 
 const menuItems = [
@@ -132,9 +134,8 @@ const menuItems = [
   }
 ];
 
-export const AdminSidebar = ({ activeSection, onSectionChange }: AdminSidebarProps) => {
+export const AdminSidebar = ({ activeSection, onSectionChange, isMobile = false, onClose }: AdminSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [openSubmenus, setOpenSubmenus] = useState<string[]>(['dashboard']);
 
   const toggleSubmenu = (id: string) => {
@@ -157,7 +158,7 @@ export const AdminSidebar = ({ activeSection, onSectionChange }: AdminSidebarPro
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-accent/20 bg-gradient-to-r from-primary to-primary-dark">
         <div className="flex items-center justify-between">
-          {!collapsed && (
+          {(!collapsed || isMobile) && (
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 flex items-center justify-center">
                 <img 
@@ -169,14 +170,26 @@ export const AdminSidebar = ({ activeSection, onSectionChange }: AdminSidebarPro
               <h2 className="text-lg font-semibold text-white font-treesh">Admin Panel</h2>
             </div>
           )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setCollapsed(!collapsed)}
-            className="hidden lg:flex text-white hover:bg-white/20"
-          >
-            <Menu className="h-4 w-4" />
-          </Button>
+          {!isMobile && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCollapsed(!collapsed)}
+              className="hidden lg:flex text-white hover:bg-white/20"
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
+          )}
+          {isMobile && onClose && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="text-white hover:bg-white/20"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </div>
       
@@ -197,13 +210,13 @@ export const AdminSidebar = ({ activeSection, onSectionChange }: AdminSidebarPro
                         variant={isActive ? "default" : "ghost"}
                         className={cn(
                           "w-full justify-start h-10 font-inter",
-                          collapsed && "px-2",
+                          collapsed && !isMobile && "px-2",
                           isActive && "bg-primary text-white hover:bg-primary-dark"
                         )}
                         onClick={() => handleItemClick(item.id, item.hasSubmenu)}
                       >
-                        <Icon className={cn("h-4 w-4", !collapsed && "mr-3")} />
-                        {!collapsed && (
+                        <Icon className={cn("h-4 w-4", (!collapsed || isMobile) && "mr-3")} />
+                        {(!collapsed || isMobile) && (
                           <>
                             <span className="flex-1 text-left">{item.label}</span>
                             {item.hasSubmenu && (
@@ -216,7 +229,7 @@ export const AdminSidebar = ({ activeSection, onSectionChange }: AdminSidebarPro
                         )}
                       </Button>
                     </TooltipTrigger>
-                    {collapsed && (
+                    {collapsed && !isMobile && (
                       <TooltipContent side="right">
                         <p>{item.label}</p>
                       </TooltipContent>
@@ -224,7 +237,7 @@ export const AdminSidebar = ({ activeSection, onSectionChange }: AdminSidebarPro
                   </Tooltip>
                 </TooltipProvider>
                 
-                {item.hasSubmenu && !collapsed && (
+                {item.hasSubmenu && (!collapsed || isMobile) && (
                   <Collapsible open={isOpen}>
                     <CollapsibleContent className="ml-4 mt-1 space-y-1">
                       {item.submenu?.map((subItem) => (
@@ -252,60 +265,18 @@ export const AdminSidebar = ({ activeSection, onSectionChange }: AdminSidebarPro
     </div>
   );
 
+  // For mobile, always show full sidebar
+  if (isMobile) {
+    return <SidebarContent />;
+  }
+
+  // Desktop sidebar with collapse functionality
   return (
-    <>
-      {/* Mobile Toggle */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="lg:hidden fixed top-4 left-4 z-50 bg-primary text-white hover:bg-primary-dark"
-        onClick={() => setMobileOpen(!mobileOpen)}
-      >
-        <Menu className="h-4 w-4" />
-      </Button>
-
-      {/* Desktop Sidebar */}
-      <aside className={cn(
-        "hidden lg:flex flex-col bg-white border-r border-accent/20 transition-all duration-300",
-        collapsed ? "w-16" : "w-64"
-      )}>
-        <SidebarContent />
-      </aside>
-
-      {/* Mobile Sidebar */}
-      {mobileOpen && (
-        <>
-          <div 
-            className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-            onClick={() => setMobileOpen(false)}
-          />
-          <aside className="lg:hidden fixed left-0 top-0 h-full w-64 bg-white border-r border-accent/20 z-50">
-            <div className="p-4 border-b border-accent/20 bg-gradient-to-r from-primary to-primary-dark flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 flex items-center justify-center">
-                  <img 
-                    src="/logo.svg" 
-                    alt="Treesh" 
-                    className="w-8 h-8 text-white"
-                  />
-                </div>
-                <h2 className="text-lg font-semibold text-white font-treesh">Admin Panel</h2>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setMobileOpen(false)}
-                className="text-white hover:bg-white/20"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <SidebarContent />
-            </div>
-          </aside>
-        </>
-      )}
-    </>
+    <aside className={cn(
+      "hidden lg:flex flex-col bg-white border-r border-accent/20 transition-all duration-300",
+      collapsed ? "w-16" : "w-64"
+    )}>
+      <SidebarContent />
+    </aside>
   );
 };

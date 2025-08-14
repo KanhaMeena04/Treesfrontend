@@ -105,10 +105,10 @@ export const NotificationPage = () => {
   const readNotifications = notifications.filter(n => n.read);
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-2xl mx-auto p-3 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center space-x-2">
-          <h1 className="text-2xl font-bold">Notifications</h1>
+          <h1 className="text-xl sm:text-2xl font-bold">Notifications</h1>
           {unreadCount > 0 && (
             <Badge className="bg-primary text-white">
               {unreadCount}
@@ -118,7 +118,7 @@ export const NotificationPage = () => {
         
         <div className="flex space-x-2">
           {unreadCount > 0 && (
-            <Button variant="outline" size="sm" onClick={markAllAsRead}>
+            <Button variant="outline" size="sm" onClick={markAllAsRead} className="w-full sm:w-auto">
               Mark all as read
             </Button>
           )}

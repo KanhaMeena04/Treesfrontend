@@ -193,26 +193,26 @@ export const FeedPost = ({ post, onReport }: FeedPostProps) => {
 
   return (
     <Card className={`${post.type === 'psa' ? 'border-orange-200 bg-orange-50' : ''}`}>
-      <CardContent className="p-4">
+      <CardContent className="p-3 sm:p-4">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-3">
-            <Avatar className="cursor-pointer hover:opacity-80 transition-opacity">
+          <div className="flex items-center space-x-3 min-w-0 flex-1">
+            <Avatar className="cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0">
               <AvatarImage src={post.user.avatar} />
               <AvatarFallback>{post.user.name.charAt(0)}</AvatarFallback>
             </Avatar>
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="flex items-center space-x-2">
-                <span className="font-medium cursor-pointer hover:text-primary transition-colors">
+                <span className="font-medium cursor-pointer hover:text-primary transition-colors truncate">
                   {post.user.name}
                 </span>
                 {post.user.verified && (
-                  <Badge className="bg-blue-500 text-white text-xs">✓</Badge>
+                  <Badge className="bg-blue-500 text-white text-xs flex-shrink-0">✓</Badge>
                 )}
                 {post.type === 'psa' && (
-                  <Badge className="bg-orange-500 text-white text-xs">PSA</Badge>
+                  <Badge className="bg-orange-500 text-white text-xs flex-shrink-0">PSA</Badge>
                 )}
               </div>
-              <span className="text-sm text-muted-foreground cursor-pointer hover:text-primary transition-colors">
+              <span className="text-sm text-muted-foreground cursor-pointer hover:text-primary transition-colors truncate">
                 @{post.user.username} • {post.timestamp}
               </span>
             </div>
@@ -261,31 +261,31 @@ export const FeedPost = ({ post, onReport }: FeedPostProps) => {
         )}
         
         <div className="flex items-center justify-between pt-3 border-t">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleLike}
-              className={`${liked ? 'text-red-500' : 'text-muted-foreground'} hover:bg-red-50 transition-colors`}
+              className={`${liked ? 'text-red-500' : 'text-muted-foreground'} hover:bg-red-50 transition-colors h-9 px-2 sm:px-3`}
             >
               <Heart className={`w-4 h-4 mr-1 ${liked ? 'fill-current' : ''}`} />
-              {likesCount}
+              <span className="hidden sm:inline">{likesCount}</span>
             </Button>
             
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-muted-foreground hover:bg-blue-50 hover:text-blue-600 transition-colors"
+              className="text-muted-foreground hover:bg-blue-50 hover:text-blue-600 transition-colors h-9 px-2 sm:px-3"
               onClick={() => setShowComments(!showComments)}
             >
               <MessageCircle className="w-4 h-4 mr-1" />
-              {post.comments}
+              <span className="hidden sm:inline">{post.comments}</span>
             </Button>
             
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-muted-foreground hover:bg-green-50 hover:text-green-600 transition-colors" 
+              className="text-muted-foreground hover:bg-green-50 hover:text-green-600 transition-colors h-9 px-2 sm:px-3" 
               onClick={handleShare}
             >
               <Share className="w-4 h-4 mr-1" />
@@ -297,7 +297,7 @@ export const FeedPost = ({ post, onReport }: FeedPostProps) => {
             variant="ghost"
             size="icon"
             onClick={handleSave}
-            className={`${saved ? 'text-blue-500' : 'text-muted-foreground'} hover:bg-blue-50 transition-colors`}
+            className={`${saved ? 'text-blue-500' : 'text-muted-foreground'} hover:bg-blue-50 transition-colors h-9 px-2 sm:px-3`}
           >
             <Bookmark className={`w-4 h-4 ${saved ? 'fill-current' : ''}`} />
           </Button>
