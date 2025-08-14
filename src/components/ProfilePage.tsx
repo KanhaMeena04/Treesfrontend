@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, Users, Lock, Shield, UserX, Edit, Save, X, AlertCircle, CheckCircle, Bookmark, Plus, Crown, Gift, Heart, MessageCircle, Share2, MoreHorizontal, Calendar, MapPin, Globe, Phone, Camera, Video, Music, Star, Eye, TrendingUp, ChevronLeft, MoreVertical } from 'lucide-react';
+import { Settings, Users, Lock, Shield, UserX, Edit, Save, X, AlertCircle, CheckCircle, Bookmark, Plus, Crown, Gift, Heart, MessageCircle, Share2, MapPin, Globe, Phone, Camera, Video, Star, Eye, TrendingUp, ChevronLeft, MoreVertical } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -164,7 +164,6 @@ export const ProfilePage = () => {
   const [showGiftSubscriptionModal, setShowGiftSubscriptionModal] = useState(false);
   const [followers, setFollowers] = useState(mockFollowers);
   const [following, setFollowing] = useState(mockFollowing);
-  const isMobile = useIsMobile();
   const isMobile = useIsMobile();
 
   const validateForm = (): boolean => {
