@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as Sonner } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -13,6 +13,16 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [showAdmin, setShowAdmin] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    // Prevent hydration mismatch
+    setIsInitialized(true);
+  }, []);
+
+  if (!isInitialized) {
+    return null;
+  }
 
   return (
     <ThemeProvider defaultTheme="light">

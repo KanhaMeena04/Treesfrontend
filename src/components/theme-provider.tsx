@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
-import { ThemeProviderProps } from "next-themes/dist/types"
 
 type Theme = "dark" | "light" | "system"
 
@@ -11,13 +10,16 @@ type ThemeContextType = {
   setTheme: (theme: Theme) => void
 }
 
+interface ThemeProviderProps {
+  children: React.ReactNode
+  defaultTheme?: Theme
+}
+
 const ThemeContext = createContext<ThemeContextType | null>(null)
 
 export function ThemeProvider({
   children,
   defaultTheme = "system",
-  value: _value,
-  ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== "undefined") {
@@ -54,7 +56,7 @@ export function ThemeProvider({
   }
 
   return (
-    <ThemeContext.Provider value={value} {...props}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   )

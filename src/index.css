@@ -6,7 +6,7 @@
 
 @font-face {
   font-family: 'Treesh';
-  src: url('https://see.fontimg.com/api/rf5/6R791/ZWIwY2ZhNDgyZTBjNDdjMDljZmQ4MDgwMTQ1Y2JmMWIudHRm/VHJlZXNo/super-cartoon.png?r=fs&h=195&w=3000&fg=000000&bg=FFFFFF&tb=1&s=65') format('truetype');
+  src: local('Arial'), local('Helvetica'), local('sans-serif');
   font-weight: normal;
   font-style: normal;
   font-display: swap;

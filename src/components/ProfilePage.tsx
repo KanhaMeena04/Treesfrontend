@@ -742,164 +742,164 @@ export const ProfilePage = () => {
                   <span className="hidden sm:inline">Saved</span>
                 </TabsTrigger>
               </TabsList>
+
+              {/* Tab Content */}
+              <div className="px-4 lg:px-6 py-4">
+                {/* Tab Header with Actions */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {activeTab === 'posts' && 'Your Posts'}
+                      {activeTab === 'reels' && 'Your Reels'}
+                      {activeTab === 'saved' && 'Saved Content'}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {activeTab === 'posts' && `Share your moments with ${user.followers} followers`}
+                      {activeTab === 'reels' && 'Create engaging short videos'}
+                      {activeTab === 'saved' && 'Your bookmarked content'}
+                    </p>
+                  </div>
+                  <div className="flex space-x-2">
+                    {activeTab === 'posts' && (
+                      <Button size="sm" variant="outline" onClick={() => setShowStoryUpload(true)}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        New Post
+                      </Button>
+                    )}
+                    {activeTab === 'reels' && (
+                      <Button size="sm" variant="outline" onClick={() => setShowStoryUpload(true)}>
+                        <Video className="w-4 h-4 mr-2" />
+                        New Reel
+                      </Button>
+                    )}
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        toast({
+                          title: 'Analytics',
+                          description: 'Post analytics and insights opened',
+                        });
+                      }}
+                    >
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      Analytics
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Posts Grid */}
+                <TabsContent value="posts" className="mt-0">
+                  <div className="grid grid-cols-3 gap-1 lg:gap-2">
+                    {mockPosts.filter(p => p.type === 'post').map((post) => (
+                      <div 
+                        key={post.id} 
+                        className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative group"
+                        onClick={() => handlePostClick(post)}
+                      >
+                        <img src={post.image} alt="Post" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-center">
+                            <div className="font-medium">{post.likes} likes</div>
+                            <div className="text-sm">{post.caption}</div>
+                          </div>
+                        </div>
+                        <div className="absolute top-2 left-2">
+                          <Badge variant="secondary" className="text-xs">
+                            <Camera className="w-3 h-3 mr-1" />
+                            Post
+                          </Badge>
+                        </div>
+                        <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <div className="flex space-x-1">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="w-6 h-6 p-0 rounded-full"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleLikePost(post.id);
+                              }}
+                            >
+                              <Heart className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="w-6 h-6 p-0 rounded-full"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSavePost(post.id);
+                              }}
+                            >
+                              <Bookmark className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+
+                {/* Reels Grid */}
+                <TabsContent value="reels" className="mt-0">
+                  <div className="grid grid-cols-3 gap-1 lg:gap-2">
+                    {mockPosts.filter(p => p.type === 'reel').map((reel) => (
+                      <div 
+                        key={reel.id} 
+                        className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative group"
+                        onClick={() => handlePostClick(reel)}
+                      >
+                        <img src={reel.image} alt="Reel" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-center">
+                            <div className="font-medium">{reel.likes} likes</div>
+                            <div className="text-sm">{reel.caption}</div>
+                          </div>
+                        </div>
+                        <div className="absolute top-2 left-2">
+                          <Badge variant="secondary" className="text-xs">
+                            <Video className="w-3 h-3 mr-1" />
+                            Reel
+                          </Badge>
+                        </div>
+                        <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <div className="flex space-x-1">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="w-6 h-6 p-0 rounded-full"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleLikePost(reel.id);
+                              }}
+                            >
+                              <Heart className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="w-6 h-6 p-0 rounded-full"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSavePost(reel.id);
+                              }}
+                            >
+                              <Bookmark className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+
+                {/* Saved Content */}
+                <TabsContent value="saved" className="mt-0">
+                  <SavedPosts />
+                </TabsContent>
+              </div>
             </Tabs>
-          </div>
-
-          {/* Tab Content */}
-          <div className="px-4 lg:px-6 py-4">
-            {/* Tab Header with Actions */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {activeTab === 'posts' && 'Your Posts'}
-                  {activeTab === 'reels' && 'Your Reels'}
-                  {activeTab === 'saved' && 'Saved Content'}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {activeTab === 'posts' && `Share your moments with ${user.followers} followers`}
-                  {activeTab === 'reels' && 'Create engaging short videos'}
-                  {activeTab === 'saved' && 'Your bookmarked content'}
-                </p>
-              </div>
-              <div className="flex space-x-2">
-                {activeTab === 'posts' && (
-                  <Button size="sm" variant="outline" onClick={() => setShowStoryUpload(true)}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    New Post
-                  </Button>
-                )}
-                {activeTab === 'reels' && (
-                  <Button size="sm" variant="outline" onClick={() => setShowStoryUpload(true)}>
-                    <Video className="w-4 h-4 mr-2" />
-                    New Reel
-                  </Button>
-                )}
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => {
-                    toast({
-                      title: 'Analytics',
-                      description: 'Post analytics and insights opened',
-                    });
-                  }}
-                >
-                  <TrendingUp className="w-4 h-4 mr-2" />
-                  Analytics
-                </Button>
-              </div>
-            </div>
-
-            {/* Posts Grid */}
-            <TabsContent value="posts" className="mt-0">
-              <div className="grid grid-cols-3 gap-1 lg:gap-2">
-                {mockPosts.filter(p => p.type === 'post').map((post) => (
-                  <div 
-                    key={post.id} 
-                    className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative group"
-                    onClick={() => handlePostClick(post)}
-                  >
-                    <img src={post.image} alt="Post" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-center">
-                        <div className="font-medium">{post.likes} likes</div>
-                        <div className="text-sm">{post.caption}</div>
-                      </div>
-                    </div>
-                    <div className="absolute top-2 left-2">
-                      <Badge variant="secondary" className="text-xs">
-                        <Camera className="w-3 h-3 mr-1" />
-                        Post
-                      </Badge>
-                    </div>
-                    <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <div className="flex space-x-1">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="w-6 h-6 p-0 rounded-full"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleLikePost(post.id);
-                          }}
-                        >
-                          <Heart className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="w-6 h-6 p-0 rounded-full"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSavePost(post.id);
-                          }}
-                        >
-                          <Bookmark className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-
-            {/* Reels Grid */}
-            <TabsContent value="reels" className="mt-0">
-              <div className="grid grid-cols-3 gap-1 lg:gap-2">
-                {mockPosts.filter(p => p.type === 'reel').map((reel) => (
-                  <div 
-                    key={reel.id} 
-                    className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative group"
-                    onClick={() => handlePostClick(reel)}
-                  >
-                    <img src={reel.image} alt="Reel" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-center">
-                        <div className="font-medium">{reel.likes} likes</div>
-                        <div className="text-sm">{reel.caption}</div>
-                      </div>
-                    </div>
-                    <div className="absolute top-2 left-2">
-                      <Badge variant="secondary" className="text-xs">
-                        <Video className="w-3 h-3 mr-1" />
-                        Reel
-                      </Badge>
-                    </div>
-                    <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <div className="flex space-x-1">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="w-6 h-6 p-0 rounded-full"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleLikePost(reel.id);
-                          }}
-                        >
-                          <Heart className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="w-6 h-6 p-0 rounded-full"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSavePost(reel.id);
-                          }}
-                        >
-                          <Bookmark className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-
-            {/* Saved Content */}
-            <TabsContent value="saved" className="mt-0">
-              <SavedPosts />
-            </TabsContent>
           </div>
         </div>
       </div>

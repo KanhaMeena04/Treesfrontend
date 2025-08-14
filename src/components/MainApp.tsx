@@ -20,13 +20,14 @@ import { StreamerDiscoveryPage } from './StreamerDiscoveryPage';
 import { SettingsPage } from './SettingsPage';
 import { SubscriptionsPage } from './SubscriptionsPage';
 import { ErrorBoundary } from './ErrorBoundary';
+import { useAuth } from '@/hooks/useAuth';
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Search, Plus, Bell, Settings, LogOut, Shield, Crown, Gift } from 'lucide-react';
+import { Search, Plus, Bell, Settings, LogOut, Shield, Crown, Gift, Heart } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const mockPosts = [
@@ -62,9 +63,9 @@ interface MainAppProps {
 }
 
 export const MainApp = ({ onShowAdmin }: MainAppProps) => {
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('home');
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
@@ -77,7 +78,7 @@ export const MainApp = ({ onShowAdmin }: MainAppProps) => {
     targetName: '' 
   });
   const [notificationCount, setNotificationCount] = useState(3);
-
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState(true);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -88,14 +89,23 @@ export const MainApp = ({ onShowAdmin }: MainAppProps) => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Show welcome screen for a few seconds before checking auth
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowWelcomeScreen(false);
+    }, 2000); // Show welcome screen for 2 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleLogin = () => {
-    setIsLoggedIn(true);
     setIsAuthOpen(false);
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
+    // This will be handled by the useAuth hook
     setActiveTab('home');
+    setShowWelcomeScreen(true); // Show welcome screen again after logout
   };
 
   const handleUpload = (type: 'post' | 'story' | 'reel') => {
@@ -112,11 +122,81 @@ export const MainApp = ({ onShowAdmin }: MainAppProps) => {
     handleReport(type, targetId, targetName);
   };
 
+  // Show welcome screen
+  if (showWelcomeScreen) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary via-primary-dark to-accent flex items-center justify-center p-4">
+        <Card className="w-full max-w-md bg-amber-50/95 backdrop-blur-sm shadow-2xl border-0">
+          <CardContent className="pt-8 pb-8 text-center">
+            <div className="flex items-center justify-center space-x-3 mb-6">
+              <img 
+                src="/logo.svg" 
+                alt="Treesh" 
+                className="w-16 h-16 object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+              <div className="w-16 h-16 rounded-full flex items-center justify-center hidden overflow-hidden">
+                <img src="/logo.svg" alt="Treesh Logo" className="w-full h-full object-cover" />
+              </div>
+            </div>
+            <h1 className="text-5xl font-bold text-primary mb-4 font-treesh">Treesh</h1>
+            <p className="text-muted-foreground mb-8 font-inter text-lg">Connect, Share, Stream</p>
+            <Button 
+              onClick={() => setIsAuthOpen(true)}
+              className="w-full bg-primary hover:bg-primary-dark text-white font-inter text-lg py-3 px-6 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl"
+            >
+              Get Started
+            </Button>
+          </CardContent>
+        </Card>
+        <EnhancedAuthModal 
+          isOpen={isAuthOpen} 
+          onClose={() => setIsAuthOpen(false)} 
+          onLogin={handleLogin}
+        />
+      </div>
+    );
+  }
+
+  // Show loading state while authentication is being initialized
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary via-primary-dark to-accent flex items-center justify-center p-4">
+        <Card className="w-full max-w-md bg-amber-50/95 backdrop-blur-sm shadow-2xl border-0">
+          <CardContent className="pt-8 pb-8 text-center">
+            <div className="flex items-center justify-center space-x-3 mb-6">
+              <img 
+                src="/logo.svg" 
+                alt="Treesh" 
+                className="w-16 h-16 object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+              <div className="w-16 h-16 rounded-full flex items-center justify-center hidden overflow-hidden">
+                <img src="/logo.svg" alt="Treesh Logo" className="w-full h-full object-cover" />
+              </div>
+            </div>
+            <h1 className="text-5xl font-bold text-primary mb-4 font-treesh">Treesh</h1>
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-muted-foreground font-inter">Loading...</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const renderContent = () => {
-    console.log('Current activeTab:', activeTab, 'isLoggedIn:', isLoggedIn);
+    console.log('Current activeTab:', activeTab, 'isAuthenticated:', isAuthenticated);
     
     // If not logged in, show login prompt for protected features
-    if (!isLoggedIn && ['arcade', 'subscriptions', 'messages', 'profile', 'settings'].includes(activeTab)) {
+    if (!isAuthenticated && ['arcade', 'subscriptions', 'messages', 'profile', 'settings'].includes(activeTab)) {
       return (
         <div className="flex-1 flex items-center justify-center p-6">
           <Card className="w-full max-w-md">
@@ -231,21 +311,21 @@ export const MainApp = ({ onShowAdmin }: MainAppProps) => {
     }
   };
 
-  if (!isLoggedIn) {
+  if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary via-primary-dark to-accent flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-amber-50/95 backdrop-blur-sm shadow-2xl border-0">
           <CardContent className="pt-8 pb-8 text-center">
             <div className="flex items-center justify-center space-x-3 mb-6">
-                          <img 
-              src="/logo.svg" 
-              alt="Treesh" 
-              className="w-16 h-16 object-contain"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.nextElementSibling?.classList.remove('hidden');
-              }}
-            />
+              <img 
+                src="/logo.svg" 
+                alt="Treesh" 
+                className="w-16 h-16 object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
               <div className="w-16 h-16 rounded-full flex items-center justify-center hidden overflow-hidden">
                 <img src="/logo.svg" alt="Treesh Logo" className="w-full h-full object-cover" />
               </div>
@@ -409,6 +489,11 @@ export const MainApp = ({ onShowAdmin }: MainAppProps) => {
         targetName={reportData.targetName}
       />
 
+      <EnhancedAuthModal 
+        isOpen={isAuthOpen} 
+        onClose={() => setIsAuthOpen(false)} 
+        onLogin={handleLogin}
+      />
 
     </div>
   );

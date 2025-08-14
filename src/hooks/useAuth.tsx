@@ -25,27 +25,12 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Start with false, don't auto-check auth
 
   const isAuthenticated = !!user;
 
-  useEffect(() => {
-    const initializeAuth = async () => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        try {
-          const userData = await demoAuthAPI.getCurrentUser();
-          setUser(userData);
-        } catch (error) {
-          console.error('Failed to get current user:', error);
-          localStorage.removeItem('authToken');
-        }
-      }
-      setIsLoading(false);
-    };
-
-    initializeAuth();
-  }, []);
+  // Don't automatically check for existing authentication
+  // Users will need to manually log in each time
 
   const login = async (identifier: string, password: string): Promise<boolean> => {
     try {
